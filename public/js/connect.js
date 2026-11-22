@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const addCardSubtitle = document.getElementById('add-card-subtitle');
   const btnDisconnect = document.getElementById('btn-disconnect');
 
-  let activeSessionId = window.currentSessionId || 'account_1';
-  let activeSlot = window.currentSlot || 1;
+  window.activeSessionId = window.currentSessionId || 'account_1';
+  window.activeSlot = window.currentSlot || 1;
   const maxAccounts = window.maxAccounts || 5;
 
   let pendingPairingSessionId = null;
@@ -117,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Open Reconnect Modal (Used for ⚡ Reconnect on existing accounts)
   window.openReconnectModal = async (sessionId, slot) => {
     try {
+      sessionId = sessionId || window.activeSessionId;
+      slot = slot || window.activeSlot;
       pendingPairingSessionId = sessionId;
       pendingPairingSlot = slot;
       isReconnectMode = true;
@@ -198,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
       disconnSlotTitle.textContent = data.label || `Account ${activeSlot}`;
     }
     if (btnRemoveActive) {
-      btnRemoveActive.style.display = activeSlot > 1 ? 'inline-flex' : 'none';
+      btnRemoveActive.style.display = 'inline-flex';
     }
 
     if (status === 'connected') {
@@ -311,8 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Switch Active Slot function
   window.switchAccountSlot = async (sessionId, slot) => {
-    activeSessionId = sessionId;
-    activeSlot = slot;
+    window.activeSessionId = sessionId;
+    window.activeSlot = slot;
 
     document.querySelectorAll('.slot-card').forEach(card => {
       const cardId = card.getAttribute('data-session-id');
@@ -360,9 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.removeActiveAccount = () => {
-    if (activeSlot > 1) {
-      window.removeAccountSlot(activeSessionId, activeSlot);
-    }
+    window.removeAccountSlot(window.activeSessionId, window.activeSlot);
   };
 
   // Socket.IO Events

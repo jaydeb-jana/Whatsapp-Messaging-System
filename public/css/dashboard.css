@@ -732,7 +732,7 @@
   padding: 0.25rem 0.55rem;
   border-radius: 6px;
   cursor: pointer;
-  margin-top: 0.4rem;
+  margin-top: 0;
   transition: all 0.15s ease;
 }
 
@@ -740,6 +740,29 @@
   background: #0284c7;
   color: #fff;
   border-color: #0284c7;
+}
+
+.slot-remove-btn-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0;
+  transition: all 0.15s ease;
+}
+
+.slot-remove-btn-inline:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: translateY(-1px);
 }
 
 /* Plus (+) Add Account Card */

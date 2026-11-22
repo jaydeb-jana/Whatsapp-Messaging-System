@@ -451,7 +451,7 @@ class MultiAccountBaileysService {
 
     if (!session.isConnected()) {
       await session.disconnect(true);
-      if (session.slot > 1) {
+      if (!hasExistingSession(id)) {
         session.isAdded = false;
       }
       logger.info(`Cancelled pending pairing for: ${session.label} (${id})`);
@@ -491,9 +491,21 @@ class MultiAccountBaileysService {
     }
 
     await session.disconnect(true);
-    if (session.slot > 1) {
-      session.isAdded = false;
+    clearSession(id);
+    session.isAdded = false;
+    session.status = 'disconnected';
+    session.accountInfo = null;
+    session.qrCode = null;
+    session.qrDataUrl = null;
+
+    try {
+      if (mongoose.connection.readyState === 1) {
+        await WhatsAppSession.deleteOne({ sessionId: id });
+      }
+    } catch (dbErr) {
+      logger.warn(`Failed to delete session record for [${id}]:`, dbErr.message);
     }
+
     logger.info(`Removed WhatsApp account slot: ${session.label} (${id})`);
     this.broadcast('whatsapp:account_removed', { sessionId: id, slot: session.slot });
     this.broadcast('whatsapp:account_update', session.getStatus());
