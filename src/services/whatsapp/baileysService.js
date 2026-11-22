@@ -202,6 +202,7 @@ class SingleAccountSession {
             connectedAt: new Date()
           };
 
+          this.isAdded = true;
           logger.success(`[${this.label}] Connected successfully! Account: ${this.accountInfo.name} (${this.accountInfo.formattedPhone})`);
 
           await this.updateDatabase('connected', {
@@ -418,6 +419,46 @@ class MultiAccountBaileysService {
 
   getAddedAccounts() {
     return this.getAllAccounts().filter(acc => acc.isAdded);
+  }
+
+  startNewAccountPairing() {
+    for (let slot = 1; slot <= this.maxAccounts; slot++) {
+      const sessionId = `account_${slot}`;
+      const session = this.accounts.get(sessionId);
+      if (session && !session.isAdded && !session.isConnected()) {
+        logger.info(`Starting temporary pairing handshake for ${session.label} (${sessionId})...`);
+        session.initSocket().catch(err => {
+          logger.warn(`Pairing initialization warning for ${session.label}:`, err.message);
+        });
+        return {
+          success: true,
+          slot: session.slot,
+          sessionId: session.sessionId,
+          label: session.label
+        };
+      }
+    }
+    return {
+      success: false,
+      error: 'Maximum 5 WhatsApp accounts already connected or pending.'
+    };
+  }
+
+  async cancelPairing(sessionId) {
+    const id = this.normalizeSessionId(sessionId);
+    const session = this.accounts.get(id);
+    if (!session) return { success: false, error: 'Account not found' };
+
+    if (!session.isConnected()) {
+      await session.disconnect(true);
+      if (session.slot > 1) {
+        session.isAdded = false;
+      }
+      logger.info(`Cancelled pending pairing for: ${session.label} (${id})`);
+      this.broadcast('whatsapp:pairing_cancelled', { sessionId: id, slot: session.slot });
+      this.broadcast('whatsapp:account_update', session.getStatus());
+    }
+    return { success: true };
   }
 
   addAccountSlot() {

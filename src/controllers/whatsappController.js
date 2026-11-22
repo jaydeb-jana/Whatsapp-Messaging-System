@@ -62,6 +62,38 @@ exports.getAllAccountsApi = (req, res) => {
   }
 };
 
+exports.startPairingApi = (req, res) => {
+  try {
+    const result = baileysService.startNewAccountPairing();
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+    return res.json(result);
+  } catch (err) {
+    logger.error('Error starting new account pairing:', err);
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to start pairing'
+    });
+  }
+};
+
+exports.cancelPairingApi = async (req, res) => {
+  try {
+    const sessionId = req.body.sessionId || req.body.slot;
+    if (sessionId) {
+      await baileysService.cancelPairing(sessionId);
+    }
+    return res.json({ success: true, message: 'Pairing cancelled' });
+  } catch (err) {
+    logger.error('Error cancelling pairing:', err);
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to cancel pairing'
+    });
+  }
+};
+
 exports.addAccountApi = (req, res) => {
   try {
     const result = baileysService.addAccountSlot();
