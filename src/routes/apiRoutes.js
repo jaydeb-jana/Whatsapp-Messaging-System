@@ -14,6 +14,9 @@ router.get('/whatsapp/status', whatsappController.getStatus);
 router.get('/whatsapp/accounts', whatsappController.getAllAccountsApi);
 router.post('/whatsapp/connect', whatsappController.initConnect);
 router.post('/whatsapp/disconnect', whatsappController.disconnect);
+router.post('/whatsapp/reconnect', whatsappController.reconnectApi);
+router.post('/whatsapp/accounts/add', whatsappController.addAccountApi);
+router.post('/whatsapp/accounts/remove', whatsappController.removeAccountApi);
 
 // Messaging APIs
 router.post('/messages/send', messagingLimiter, upload.single('media'), messageController.sendMessageApi);

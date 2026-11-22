@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 exports.renderSend = async (req, res, next) => {
   try {
     const statusInfo = baileysService.getStatus();
-    const accounts = baileysService.getAllAccounts();
+    const accounts = baileysService.getAddedAccounts();
     const connectedAccounts = baileysService.getConnectedAccounts();
 
     res.render('messages/send', {

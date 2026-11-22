@@ -3,18 +3,22 @@ const logger = require('../utils/logger');
 
 exports.renderConnect = async (req, res, next) => {
   try {
-    const slot = req.query.slot || 'account_1';
-    const accounts = baileysService.getAllAccounts();
+    const addedAccounts = baileysService.getAddedAccounts();
+    const slot = req.query.slot || (addedAccounts.length > 0 ? addedAccounts[0].sessionId : 'account_1');
     const currentAccount = baileysService.getAccount(slot);
     const statusInfo = currentAccount.getStatus();
 
     res.render('whatsapp/connect', {
       title: 'WhatsApp Connection Management',
       page: 'connect',
-      accounts,
+      accounts: addedAccounts,
+      allAccounts: baileysService.getAllAccounts(),
+      maxAccounts: baileysService.maxAccounts,
       selectedSlot: currentAccount.slot,
       selectedSessionId: currentAccount.sessionId,
-      statusInfo
+      statusInfo,
+      connectedCount: baileysService.getConnectedAccounts().length,
+      addedCount: addedAccounts.length
     });
   } catch (err) {
     logger.error('Error rendering WhatsApp connect page:', err);
@@ -29,7 +33,8 @@ exports.getStatus = (req, res) => {
     return res.json({
       success: true,
       data: statusInfo,
-      accounts: baileysService.getAllAccounts()
+      accounts: baileysService.getAllAccounts(),
+      addedAccounts: baileysService.getAddedAccounts()
     });
   } catch (err) {
     return res.status(500).json({
@@ -44,13 +49,67 @@ exports.getAllAccountsApi = (req, res) => {
     return res.json({
       success: true,
       accounts: baileysService.getAllAccounts(),
+      addedAccounts: baileysService.getAddedAccounts(),
       connectedCount: baileysService.getConnectedAccounts().length,
+      addedCount: baileysService.getAddedAccounts().length,
       maxAccounts: baileysService.maxAccounts
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
       error: err.message
+    });
+  }
+};
+
+exports.addAccountApi = (req, res) => {
+  try {
+    const result = baileysService.addAccountSlot();
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+    return res.json(result);
+  } catch (err) {
+    logger.error('Error adding WhatsApp account slot:', err);
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to add account'
+    });
+  }
+};
+
+exports.removeAccountApi = async (req, res) => {
+  try {
+    const sessionId = req.body.sessionId || req.body.slot;
+    if (!sessionId) {
+      return res.status(400).json({ success: false, error: 'sessionId is required' });
+    }
+    const result = await baileysService.removeAccountSlot(sessionId);
+    return res.json(result);
+  } catch (err) {
+    logger.error('Error removing WhatsApp account slot:', err);
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to remove account'
+    });
+  }
+};
+
+exports.reconnectApi = async (req, res) => {
+  try {
+    const sessionId = req.body.sessionId || req.body.slot || 'account_1';
+    logger.info(`User requested WhatsApp reconnection for [${sessionId}]`);
+    const result = await baileysService.initSocket(sessionId);
+    return res.json({
+      success: true,
+      data: result,
+      message: `Reconnection initiated for ${result.label}`
+    });
+  } catch (err) {
+    logger.error('Error reconnecting WhatsApp:', err);
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to reconnect WhatsApp'
     });
   }
 };

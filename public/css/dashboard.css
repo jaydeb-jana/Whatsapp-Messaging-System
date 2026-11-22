@@ -649,3 +649,185 @@
   font-size: 0.72rem;
   color: var(--text-muted);
 }
+
+/* ==========================================================================
+   Dynamic Multi-Account Manager & Plus (+) Button Styles
+   ========================================================================== */
+
+/* Account Slot Card */
+.slot-card {
+  position: relative;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 110px;
+}
+
+.slot-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.4);
+}
+
+.slot-card.active {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+.slot-card.disconnected {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.04);
+}
+
+.slot-card.disconnected.active {
+  border-color: #ef4444;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.2);
+}
+
+.slot-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.slot-card:hover .slot-remove-btn {
+  display: flex;
+}
+
+.slot-remove-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  transform: scale(1.15);
+}
+
+.slot-reconnect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.slot-reconnect-btn:hover {
+  background: #0284c7;
+  color: #fff;
+  border-color: #0284c7;
+}
+
+/* Plus (+) Add Account Card */
+.add-slot-card {
+  background: rgba(16, 185, 129, 0.04);
+  border: 2px dashed rgba(16, 185, 129, 0.35);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 110px;
+}
+
+.add-slot-card:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
+.add-slot-card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-style: solid;
+  border-color: var(--border-color);
+  background: var(--bg-input);
+}
+
+.add-slot-card.disabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-color);
+}
+
+.add-slot-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  color: var(--text-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.45rem;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.add-slot-card:hover .add-slot-icon {
+  transform: scale(1.1) rotate(90deg);
+  background: var(--primary);
+  color: #06090f;
+}
+
+/* Disconnected Account Card (Workspace View) */
+.disconnected-account-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.08);
+}
+
+.disconnected-large-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.3) 100%);
+  border: 2px solid rgba(239, 68, 68, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f87171;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+  animation: pulseDisconn 2s infinite ease-in-out;
+}
+
+@keyframes pulseDisconn {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(239, 68, 68, 0.25); }
+  50% { transform: scale(1.04); box-shadow: 0 0 35px rgba(239, 68, 68, 0.45); }
+}

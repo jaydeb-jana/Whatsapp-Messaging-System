@@ -33,6 +33,7 @@ class SingleAccountSession {
     this.reconnectTimeout = null;
     this.silentLogger = pino({ level: 'silent' });
     this.broadcast = ioCallback;
+    this.isAdded = slotNumber === 1 || hasExistingSession(this.sessionId);
   }
 
   getStatus() {
@@ -40,6 +41,7 @@ class SingleAccountSession {
       slot: this.slot,
       sessionId: this.sessionId,
       label: this.label,
+      isAdded: this.isAdded,
       status: this.status,
       connected: this.status === 'connected',
       connecting: this.status === 'connecting',
@@ -412,6 +414,52 @@ class MultiAccountBaileysService {
 
   getConnectedAccounts() {
     return this.getAllAccounts().filter(acc => acc.connected);
+  }
+
+  getAddedAccounts() {
+    return this.getAllAccounts().filter(acc => acc.isAdded);
+  }
+
+  addAccountSlot() {
+    for (let slot = 1; slot <= this.maxAccounts; slot++) {
+      const sessionId = `account_${slot}`;
+      const session = this.accounts.get(sessionId);
+      if (session && !session.isAdded) {
+        session.isAdded = true;
+        logger.info(`Added new WhatsApp account slot: ${session.label} (${sessionId})`);
+        this.broadcast('whatsapp:account_added', session.getStatus());
+        this.broadcast('whatsapp:account_update', session.getStatus());
+        return {
+          success: true,
+          account: session.getStatus(),
+          message: `${session.label} added successfully.`
+        };
+      }
+    }
+    return {
+      success: false,
+      error: 'Maximum of 5 WhatsApp accounts already added.'
+    };
+  }
+
+  async removeAccountSlot(sessionId) {
+    const id = this.normalizeSessionId(sessionId);
+    const session = this.accounts.get(id);
+    if (!session) {
+      return { success: false, error: 'Account not found' };
+    }
+
+    await session.disconnect(true);
+    if (session.slot > 1) {
+      session.isAdded = false;
+    }
+    logger.info(`Removed WhatsApp account slot: ${session.label} (${id})`);
+    this.broadcast('whatsapp:account_removed', { sessionId: id, slot: session.slot });
+    this.broadcast('whatsapp:account_update', session.getStatus());
+    return {
+      success: true,
+      message: `${session.label} removed successfully.`
+    };
   }
 
   getStatus(sessionId) {

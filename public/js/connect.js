@@ -1,26 +1,34 @@
 /**
- * Multi-Account WhatsApp Connection Manager Client Script
+ * Dynamic Multi-Account WhatsApp Connection Manager Client Script
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   const qrCard = document.getElementById('qr-card');
   const connectedCard = document.getElementById('connected-card');
+  const disconnectedCard = document.getElementById('disconnected-card');
   const qrImage = document.getElementById('qr-image');
   const qrPlaceholder = document.getElementById('qr-placeholder');
   const qrCountdownEl = document.getElementById('qr-countdown');
-  const btnConnect = document.getElementById('btn-connect');
-  const btnDisconnect = document.getElementById('btn-disconnect');
   const btnRefreshQr = document.getElementById('btn-refresh-qr');
+  const btnDisconnect = document.getElementById('btn-disconnect');
   const connectionStatePill = document.getElementById('connection-state-pill');
   const connectedAccountName = document.getElementById('connected-account-name');
   const connectedAccountPhone = document.getElementById('connected-account-phone');
   const connectedAccountTime = document.getElementById('connected-account-time');
   const connectedSlotLabel = document.getElementById('connected-slot-label');
   const activeSlotName = document.getElementById('active-slot-name');
+  const disconnSlotTitle = document.getElementById('disconn-slot-title');
   const connectedCountPill = document.getElementById('connected-count-pill');
+  const btnQuickAdd = document.getElementById('btn-quick-add');
+  const cardAddButton = document.getElementById('card-add-button');
+  const addCardTitle = document.getElementById('add-card-title');
+  const addCardSubtitle = document.getElementById('add-card-subtitle');
+  const slotsGrid = document.getElementById('slots-grid');
+  const btnRemoveActive = document.getElementById('btn-remove-active');
 
   let activeSessionId = window.currentSessionId || 'account_1';
   let activeSlot = window.currentSlot || 1;
+  const maxAccounts = window.maxAccounts || 5;
   let countdownInterval = null;
   let remainingSeconds = 45;
 
@@ -46,6 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     qrImage.src = dataUrl;
     qrImage.style.display = 'block';
     if (qrPlaceholder) qrPlaceholder.style.display = 'none';
+
+    // Show QR card, hide other cards
+    if (qrCard) qrCard.style.display = 'flex';
+    if (disconnectedCard) disconnectedCard.style.display = 'none';
+    if (connectedCard) connectedCard.style.display = 'none';
+
     startCountdown(expirySeconds);
   }
 
@@ -62,12 +76,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activeSlotName) {
       activeSlotName.textContent = data.label || `Account ${activeSlot}`;
     }
+    if (disconnSlotTitle) {
+      disconnSlotTitle.textContent = data.label || `Account ${activeSlot}`;
+    }
+    if (btnRemoveActive) {
+      btnRemoveActive.style.display = activeSlot > 1 ? 'inline-flex' : 'none';
+    }
 
     if (status === 'connected') {
+      if (disconnectedCard) disconnectedCard.style.display = 'none';
       if (qrCard) qrCard.style.display = 'none';
       if (connectedCard) connectedCard.style.display = 'flex';
-      if (btnConnect) btnConnect.style.display = 'none';
-      if (btnDisconnect) btnDisconnect.style.display = 'inline-flex';
 
       if (data.accountInfo) {
         if (connectedAccountName) connectedAccountName.textContent = data.accountInfo.name || `Account #${activeSlot}`;
@@ -79,11 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (connectedSlotLabel) {
         connectedSlotLabel.textContent = `Slot #${activeSlot} (${activeSessionId})`;
       }
-    } else {
+    } else if (status === 'connecting' || !!data.qrDataUrl) {
+      if (disconnectedCard) disconnectedCard.style.display = 'none';
       if (connectedCard) connectedCard.style.display = 'none';
       if (qrCard) qrCard.style.display = 'flex';
-      if (btnConnect) btnConnect.style.display = 'inline-flex';
-      if (btnDisconnect) btnDisconnect.style.display = 'none';
 
       if (data.qrDataUrl) {
         displayQR(data.qrDataUrl, data.qrExpirySeconds || 45);
@@ -91,47 +109,113 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qrImage) qrImage.style.display = 'none';
         if (qrPlaceholder) qrPlaceholder.style.display = 'flex';
       }
+    } else {
+      // Disconnected state
+      if (connectedCard) connectedCard.style.display = 'none';
+      if (qrCard) qrCard.style.display = 'none';
+      if (disconnectedCard) disconnectedCard.style.display = 'flex';
     }
   }
 
   function updateSlotCardInGrid(slotData) {
+    const card = document.getElementById(`card-${slotData.sessionId}`);
     const dot = document.getElementById(`dot-${slotData.sessionId}`);
     const phone = document.getElementById(`phone-${slotData.sessionId}`);
     const status = document.getElementById(`status-${slotData.sessionId}`);
+    let reconnBtn = document.getElementById(`reconn-btn-${slotData.sessionId}`);
+
+    if (card) {
+      if (slotData.status === 'disconnected') {
+        card.classList.add('disconnected');
+      } else {
+        card.classList.remove('disconnected');
+      }
+    }
 
     if (dot) dot.className = `status-dot ${slotData.status}`;
     if (status) status.textContent = slotData.status;
+
     if (phone) {
-      phone.textContent = slotData.accountInfo ? (slotData.accountInfo.formattedPhone || slotData.accountInfo.name) : 'Ready to Link';
-      phone.style.color = slotData.connected ? 'var(--text-accent)' : 'var(--text-muted)';
+      if (slotData.connected) {
+        phone.textContent = slotData.accountInfo ? (slotData.accountInfo.formattedPhone || slotData.accountInfo.name) : 'Connected';
+        phone.style.color = 'var(--text-accent)';
+      } else if (slotData.status === 'disconnected') {
+        phone.textContent = 'Disconnected';
+        phone.style.color = '#f87171';
+      } else {
+        phone.textContent = 'Connecting...';
+        phone.style.color = 'var(--text-muted)';
+      }
     }
 
-    // Refresh count
+    // Toggle inline Reconnect button on the slot card
+    if (slotData.status === 'disconnected') {
+      if (!reconnBtn && status && status.parentElement) {
+        reconnBtn = document.createElement('button');
+        reconnBtn.type = 'button';
+        reconnBtn.className = 'slot-reconnect-btn';
+        reconnBtn.id = `reconn-btn-${slotData.sessionId}`;
+        reconnBtn.innerHTML = '⚡ Reconnect';
+        reconnBtn.onclick = (e) => {
+          e.stopPropagation();
+          window.triggerReconnect(slotData.sessionId, slotData.slot);
+        };
+        status.parentElement.appendChild(reconnBtn);
+      }
+    } else if (reconnBtn) {
+      reconnBtn.remove();
+    }
+
+    // Refresh totals count
+    refreshAccountsSummary();
+  }
+
+  function refreshAccountsSummary() {
     fetch('/api/whatsapp/accounts')
       .then(res => res.json())
       .then(data => {
-        if (data.success && connectedCountPill) {
-          connectedCountPill.textContent = `${data.connectedCount} / ${data.maxAccounts} Connected`;
+        if (!data.success) return;
+
+        if (connectedCountPill) {
+          connectedCountPill.textContent = `${data.connectedCount} / ${data.maxAccounts} Online`;
+        }
+
+        const addedCount = data.addedAccounts ? data.addedAccounts.length : (data.accounts ? data.accounts.filter(a => a.isAdded).length : 1);
+        const isMax = addedCount >= maxAccounts;
+
+        if (btnQuickAdd) {
+          btnQuickAdd.disabled = isMax;
+          btnQuickAdd.style.opacity = isMax ? '0.45' : '1';
+        }
+
+        if (cardAddButton) {
+          if (isMax) {
+            cardAddButton.classList.add('disabled');
+          } else {
+            cardAddButton.classList.remove('disabled');
+          }
+        }
+        if (addCardTitle) {
+          addCardTitle.textContent = isMax ? 'Max Slots Reached' : '+ Add Account';
+        }
+        if (addCardSubtitle) {
+          addCardSubtitle.textContent = isMax ? '5 of 5 accounts in use' : `Link another number (${addedCount}/${maxAccounts})`;
         }
       })
       .catch(() => {});
   }
 
-  // Switch Slot function
+  // Switch Active Slot function
   window.switchAccountSlot = async (sessionId, slot) => {
     activeSessionId = sessionId;
     activeSlot = slot;
 
-    // Update active highlight in UI grid
+    // Highlight selected card
     document.querySelectorAll('.slot-card').forEach(card => {
-      const cardSlot = card.getAttribute('data-session-id');
-      if (cardSlot === sessionId) {
-        card.style.background = 'rgba(16, 185, 129, 0.12)';
-        card.style.borderColor = 'var(--primary)';
+      const cardId = card.getAttribute('data-session-id');
+      if (cardId === sessionId) {
         card.classList.add('active');
       } else {
-        card.style.background = 'var(--bg-input)';
-        card.style.borderColor = 'var(--border-color)';
         card.classList.remove('active');
       }
     });
@@ -145,6 +229,110 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       console.error('Error switching slot:', err);
+    }
+  };
+
+  // Reconnect active account action
+  window.reconnectActiveAccount = async () => {
+    try {
+      if (disconnectedCard) disconnectedCard.style.display = 'none';
+      if (connectedCard) connectedCard.style.display = 'none';
+      if (qrCard) qrCard.style.display = 'flex';
+      if (qrPlaceholder) {
+        qrPlaceholder.style.display = 'flex';
+        qrPlaceholder.innerHTML = `<div class="qr-spinner"></div><span>Generating QR Code...</span><span style="font-size:0.75rem;color:#64748b;">Requesting new pairing session for Account #${activeSlot}</span>`;
+      }
+      if (qrImage) qrImage.style.display = 'none';
+
+      if (window.showToast) window.showToast(`Initializing QR code for Account #${activeSlot}...`, 'info');
+
+      const res = await fetch('/api/whatsapp/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: activeSessionId })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        if (window.showToast) window.showToast(data.error || 'Failed to initialize reconnection', 'error');
+        renderActiveSlotStatus({ status: 'disconnected', label: `Account ${activeSlot}` });
+      }
+    } catch (err) {
+      if (window.showToast) window.showToast(`Error: ${err.message}`, 'error');
+      renderActiveSlotStatus({ status: 'disconnected', label: `Account ${activeSlot}` });
+    }
+  };
+
+  // Trigger Reconnect directly from slot card
+  window.triggerReconnect = async (sessionId, slot) => {
+    await window.switchAccountSlot(sessionId, slot);
+    window.reconnectActiveAccount();
+  };
+
+  // Cancel connecting
+  window.cancelConnecting = () => {
+    renderActiveSlotStatus({ status: 'disconnected', label: `Account ${activeSlot}` });
+  };
+
+  // Add New Account Slot via Plus (+) button
+  window.addNewAccountSlot = async () => {
+    try {
+      if (cardAddButton && cardAddButton.classList.contains('disabled')) {
+        if (window.showToast) window.showToast('Maximum 5 WhatsApp accounts already added.', 'warn');
+        return;
+      }
+
+      if (window.showToast) window.showToast('Creating new account slot...', 'info');
+
+      const res = await fetch('/api/whatsapp/accounts/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        if (window.showToast) window.showToast(data.error || 'Could not add account', 'error');
+        return;
+      }
+
+      const newAccount = data.account;
+      if (window.showToast) window.showToast(`Slot #${newAccount.slot} created! Scan QR code to connect.`, 'success');
+
+      // Refresh page or switch to new slot and start QR
+      window.location.href = `/whatsapp/connect?slot=${newAccount.sessionId}`;
+    } catch (err) {
+      if (window.showToast) window.showToast(`Error: ${err.message}`, 'error');
+    }
+  };
+
+  // Remove Account Slot
+  window.removeAccountSlot = async (sessionId, slot) => {
+    if (!confirm(`Are you sure you want to remove Account #${slot}? Any active connection will be disconnected.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/whatsapp/accounts/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        if (window.showToast) window.showToast(`Account #${slot} removed successfully.`, 'info');
+        window.location.href = '/whatsapp/connect';
+      } else {
+        if (window.showToast) window.showToast(data.error || 'Failed to remove account', 'error');
+      }
+    } catch (err) {
+      if (window.showToast) window.showToast(`Error: ${err.message}`, 'error');
+    }
+  };
+
+  window.removeActiveAccount = () => {
+    if (activeSlot > 1) {
+      window.removeAccountSlot(activeSessionId, activeSlot);
     }
   };
 
@@ -171,9 +359,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.sessionId === activeSessionId) {
         renderActiveSlotStatus({ status: 'disconnected', label: data.label });
       }
-      updateSlotCardInGrid(data);
+      updateSlotCardInGrid({ ...data, status: 'disconnected' });
       if (window.showToast) {
-        window.showToast(`[${data.label || 'Account'}] Disconnected: ${data.reason || 'Session ended'}`, 'warn');
+        window.showToast(`[${data.label || 'Account'}] Disconnected: ${data.reason || 'Offline'}`, 'warn');
       }
     });
 
@@ -183,33 +371,13 @@ document.addEventListener('DOMContentLoaded', () => {
         renderActiveSlotStatus(data);
       }
     });
-  }
 
-  // Connect Button Handler
-  if (btnConnect) {
-    btnConnect.addEventListener('click', async () => {
-      try {
-        btnConnect.disabled = true;
-        btnConnect.innerHTML = `<span class="qr-spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Generating QR...`;
+    window.appSocket.on('whatsapp:account_added', () => {
+      refreshAccountsSummary();
+    });
 
-        const res = await fetch('/api/whatsapp/connect', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: activeSessionId })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          if (window.showToast) window.showToast(`Initializing connection for Account ${activeSlot}...`, 'info');
-        } else {
-          if (window.showToast) window.showToast(data.error || 'Failed to initialize connection', 'error');
-        }
-      } catch (err) {
-        if (window.showToast) window.showToast(`Error: ${err.message}`, 'error');
-      } finally {
-        btnConnect.disabled = false;
-        btnConnect.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Initialize Connection`;
-      }
+    window.appSocket.on('whatsapp:account_removed', () => {
+      refreshAccountsSummary();
     });
   }
 
@@ -224,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ sessionId: activeSessionId })
         });
         const data = await res.json();
-        if (window.showToast) window.showToast(`Refreshing QR Code for Account ${activeSlot}...`, 'info');
+        if (window.showToast) window.showToast(`Refreshing QR Code for Account #${activeSlot}...`, 'info');
       } catch (err) {
         if (window.showToast) window.showToast(err.message, 'error');
       } finally {
@@ -250,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const data = await res.json();
         if (data.success) {
-          if (window.showToast) window.showToast(`Account #${activeSlot} disconnected successfully.`, 'success');
+          if (window.showToast) window.showToast(`Account #${activeSlot} disconnected.`, 'success');
           renderActiveSlotStatus({ status: 'disconnected', label: `Account ${activeSlot}` });
         } else {
           if (window.showToast) window.showToast(data.error || 'Failed to disconnect', 'error');
@@ -259,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.showToast) window.showToast(`Error: ${err.message}`, 'error');
       } finally {
         btnDisconnect.disabled = false;
-        btnDisconnect.textContent = 'Disconnect This Account';
+        btnDisconnect.textContent = 'Disconnect Account';
       }
     });
   }
