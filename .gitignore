@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+
+# WhatsApp Auth Session Credentials (CRITICAL: Never commit auth keys)
+storage/whatsapp-sessions/*
+!storage/whatsapp-sessions/.gitkeep
+
+# Uploaded Media Files
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Application Logs
+logs/*
+!logs/.gitkeep
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,75 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand-logo">
+      <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 10h.01M12 10h.01M15 10h.01"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-title"><%= appName %></span>
+      <span class="brand-badge">Enterprise Edition</span>
+    </div>
+  </div>
+
+  <!-- Real-time WhatsApp Status Indicator -->
+  <div class="sidebar-status-pill">
+    <div class="status-indicator">
+      <span class="status-dot <%= (typeof statusInfo !== 'undefined' && statusInfo.status) ? statusInfo.status : 'disconnected' %>"></span>
+      <span class="status-text"><%= (typeof statusInfo !== 'undefined' && statusInfo.status) ? statusInfo.status : 'disconnected' %></span>
+    </div>
+    <a href="/whatsapp/connect" style="font-size: 0.72rem; color: var(--text-accent); text-decoration: none; font-weight: 600;">Manage &rarr;</a>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Navigation</div>
+    
+    <a href="/" class="nav-link <%= currentPath === '/' ? 'active' : '' %>">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="/whatsapp/connect" class="nav-link <%= currentPath.startsWith('/whatsapp') ? 'active' : '' %>">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+      </svg>
+      <span>Manage Accounts (5 Slots)</span>
+    </a>
+
+    <a href="/messages/send" class="nav-link <%= currentPath === '/messages/send' ? 'active' : '' %>">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+      </svg>
+      <span>Send Message</span>
+    </a>
+
+    <a href="/messages/history" class="nav-link <%= currentPath === '/messages/history' ? 'active' : '' %>">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>Message History</span>
+    </a>
+
+    <a href="/auth/logout" onclick="sessionStorage.removeItem('pin_tab_session');" class="nav-link" style="color: #fca5a5;">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      <span>Lock Platform</span>
+    </a>
+
+    <div class="nav-section-title" style="margin-top: 1rem;">System & Engine</div>
+    <div style="padding: 0.6rem 0.85rem; font-size: 0.78rem; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); line-height: 1.6;">
+      <div><strong>Engine:</strong> Baileys v7</div>
+      <div><strong>Storage:</strong> Multi-Device MultiFile</div>
+      <div><strong>Database:</strong> MongoDB Mongoose</div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span>v1.0.0 Production</span>
+    <span style="color: var(--primary); font-weight: 600;">● Online</span>
+  </div>
+</aside>

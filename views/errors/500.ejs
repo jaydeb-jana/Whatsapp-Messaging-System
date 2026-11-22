@@ -1,0 +1,13 @@
+<div style="text-align: center; padding: 4rem 1rem; max-width: 600px; margin: 0 auto;">
+  <div style="font-size: 4rem; font-weight: 800; color: var(--danger); line-height: 1;">500</div>
+  <h2 style="font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0.5rem; color: #fff;">Internal Server Error</h2>
+  <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+    <%= error || 'An unexpected error occurred while processing your request.' %>
+  </p>
+  <% if (stack) { %>
+    <pre style="text-align: left; background: var(--bg-card); border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md); font-size: 0.75rem; color: #fca5a5; overflow-x: auto; margin-bottom: 1.5rem;"><%= stack %></pre>
+  <% } %>
+  <a href="/" class="btn btn-primary">
+    &larr; Return to Dashboard
+  </a>
+</div>

@@ -1,0 +1,207 @@
+<div class="card">
+  <div class="card-header">
+    <div>
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Message History & Audit Logs
+      </h2>
+      <p class="card-subtitle">Comprehensive persistent ledger of all outgoing messages stored in MongoDB.</p>
+    </div>
+    <div>
+      <a href="/messages/send" class="btn btn-primary btn-sm">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Compose Message
+      </a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <form method="GET" action="/messages/history" class="filters-bar">
+    <div class="filters-left">
+      <!-- Search Input -->
+      <div class="search-input-wrapper">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          type="text"
+          name="search"
+          class="form-control"
+          placeholder="Search by phone or content..."
+          value="<%= query.search || '' %>"
+        >
+      </div>
+
+      <!-- Status Filter -->
+      <select name="status" class="form-control" style="width: auto; cursor: pointer;">
+        <option value="">All Statuses</option>
+        <option value="sent" <%= query.status === 'sent' ? 'selected' : '' %>>Sent Only</option>
+        <option value="failed" <%= query.status === 'failed' ? 'selected' : '' %>>Failed Only</option>
+        <option value="sending" <%= query.status === 'sending' ? 'selected' : '' %>>Sending</option>
+      </select>
+
+      <!-- Message Type Filter -->
+      <select name="type" class="form-control" style="width: auto; cursor: pointer;">
+        <option value="">All Types</option>
+        <option value="text" <%= query.type === 'text' ? 'selected' : '' %>>Text Messages</option>
+        <option value="image" <%= query.type === 'image' ? 'selected' : '' %>>Image Messages</option>
+        <option value="video" <%= query.type === 'video' ? 'selected' : '' %>>Video Messages</option>
+        <option value="document" <%= query.type === 'document' ? 'selected' : '' %>>Document Messages</option>
+      </select>
+
+      <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+      <% if (query.search || query.status || query.type) { %>
+        <a href="/messages/history" class="btn btn-secondary btn-sm" style="color: #f87171;">Clear Filters</a>
+      <% } %>
+    </div>
+
+    <div style="font-size: 0.82rem; color: var(--text-muted);">
+      Total records: <strong><%= history.total %></strong>
+    </div>
+  </form>
+
+  <!-- Table View -->
+  <div class="table-responsive">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Sender Account</th>
+          <th>Recipient</th>
+          <th>Type</th>
+          <th>Message Content / Media Attachment</th>
+          <th>Status</th>
+          <th>Dispatched At</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (history.messages && history.messages.length > 0) { %>
+          <% history.messages.forEach(msg => { %>
+            <tr>
+              <!-- Sender Account -->
+              <td>
+                <% const slotNum = msg.senderSessionId ? msg.senderSessionId.replace('account_', '') : '1'; %>
+                <span class="badge badge-secondary" style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;">
+                  Slot #<%= slotNum %>
+                </span>
+                <% if (msg.senderPhone) { %>
+                  <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">+<%= msg.senderPhone %></div>
+                <% } %>
+              </td>
+
+              <!-- Recipient -->
+              <td>
+                <span class="table-recipient"><%= msg.recipient %></span>
+                <% if (msg.metadata && msg.metadata.country) { %>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);"><%= msg.metadata.country %></div>
+                <% } %>
+              </td>
+
+              <!-- Type Badge -->
+              <td>
+                <% if (msg.messageType === 'text') { %>
+                  <span class="badge badge-info">💬 Text</span>
+                <% } else if (msg.messageType === 'image') { %>
+                  <span class="badge badge-info">🖼️ Image</span>
+                <% } else if (msg.messageType === 'video') { %>
+                  <span class="badge badge-info">🎥 Video</span>
+                <% } else { %>
+                  <span class="badge badge-info">📄 Document</span>
+                <% } %>
+              </td>
+
+              <!-- Content or Media Preview -->
+              <td>
+                <div class="table-content-preview" title="<%= msg.content || '' %>">
+                  <% if (msg.content) { %>
+                    <%= msg.content %>
+                  <% } else if (msg.fileName) { %>
+                    <span style="color: var(--text-accent);">📎 <%= msg.fileName %></span>
+                  <% } else { %>
+                    <span style="color: var(--text-muted);"><em>No text content</em></span>
+                  <% } %>
+                </div>
+                <% if (msg.fileName && msg.content) { %>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">
+                    File: <%= msg.fileName %> (<%= (msg.fileSize / 1024 / 1024).toFixed(2) %> MB)
+                  </div>
+                <% } %>
+              </td>
+
+              <!-- Status -->
+              <td>
+                <% if (msg.status === 'sent') { %>
+                  <span class="badge badge-success">SENT</span>
+                <% } else if (msg.status === 'failed') { %>
+                  <span class="badge badge-danger">FAILED</span>
+                <% } else { %>
+                  <span class="badge badge-warning"><%= msg.status.toUpperCase() %></span>
+                <% } %>
+              </td>
+
+              <!-- Timestamp -->
+              <td style="font-size: 0.8rem; color: var(--text-muted);">
+                <%= new Date(msg.createdAt).toLocaleString() %>
+              </td>
+
+              <!-- Details / Error -->
+              <td>
+                <% if (msg.status === 'failed') { %>
+                  <span style="font-size: 0.75rem; color: #f87171;" title="<%= msg.errorMessage %>">
+                    <%= msg.errorMessage ? (msg.errorMessage.length > 35 ? msg.errorMessage.substring(0, 35) + '...' : msg.errorMessage) : 'Transmission error' %>
+                  </span>
+                <% } else if (msg.metadata && msg.metadata.baileyMessageId) { %>
+                  <span style="font-size: 0.72rem; color: var(--text-muted); font-family: monospace;">
+                    ID: <%= msg.metadata.baileyMessageId.substring(0, 10) %>...
+                  </span>
+                <% } else { %>
+                  <span style="color: var(--text-muted); font-size: 0.75rem;">—</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
+              No messages found matching your criteria.<br>
+              <a href="/messages/send" style="color: var(--text-accent); text-decoration: none; font-weight: 600;">Compose a new message now &rarr;</a>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <% if (history.pages > 1) { %>
+    <div class="pagination-wrapper">
+      <div>
+        Showing page <strong><%= history.page %></strong> of <strong><%= history.pages %></strong>
+      </div>
+      <div class="pagination-buttons">
+        <% if (history.page > 1) { %>
+          <a
+            href="/messages/history?page=<%= history.page - 1 %>&status=<%= query.status || '' %>&type=<%= query.type || '' %>&search=<%= query.search || '' %>"
+            class="btn btn-secondary btn-sm"
+          >
+            &larr; Previous
+          </a>
+        <% } %>
+
+        <% if (history.page < history.pages) { %>
+          <a
+            href="/messages/history?page=<%= history.page + 1 %>&status=<%= query.status || '' %>&type=<%= query.type || '' %>&search=<%= query.search || '' %>"
+            class="btn btn-secondary btn-sm"
+          >
+            Next &rarr;
+          </a>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+</div>

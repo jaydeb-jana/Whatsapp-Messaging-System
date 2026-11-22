@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Security PIN Lock' %> | WhatsFlow Pro</title>
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #06090f;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+      color: #f8fafc;
+    }
+
+    /* Ambient Aurora Glow Background Elements */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .aurora-orb-1 {
+      position: absolute;
+      top: -15%;
+      left: 20%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(16, 185, 129, 0.03) 60%, transparent 75%);
+      filter: blur(60px);
+      border-radius: 50%;
+      animation: floatOrb 12s ease-in-out infinite alternate;
+    }
+
+    .aurora-orb-2 {
+      position: absolute;
+      bottom: -15%;
+      right: 15%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(59, 130, 246, 0.04) 60%, transparent 75%);
+      filter: blur(80px);
+      border-radius: 50%;
+      animation: floatOrb 16s ease-in-out infinite alternate-reverse;
+    }
+
+    .dot-grid {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 40%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 40%, transparent 80%);
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* Main Glassmorphic Security Card */
+    .pin-card {
+      position: relative;
+      z-index: 10;
+      background: rgba(13, 20, 34, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 2.75rem 2.25rem 2.25rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 
+        0 25px 60px -15px rgba(0, 0, 0, 0.8),
+        0 0 40px rgba(16, 185, 129, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Glowing Top Rim */
+    .card-top-glow {
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #10b981, #38bdf8, transparent);
+      box-shadow: 0 0 15px #10b981;
+    }
+
+    /* Logo & Icon Badge */
+    .brand-icon-wrapper {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon-bg {
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.1) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.35);
+      transform: rotate(-3deg);
+      transition: transform 0.3s ease;
+    }
+
+    .brand-icon-wrapper:hover .brand-icon-bg {
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    .brand-icon {
+      position: relative;
+      z-index: 2;
+      color: #34d399;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.85rem;
+    }
+
+    .security-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .pin-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.35rem;
+      line-height: 1.2;
+    }
+
+    .pin-desc {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      margin-bottom: 1.85rem;
+      line-height: 1.5;
+    }
+
+    .pin-desc strong {
+      color: #e2e8f0;
+    }
+
+    /* 6-Digit PIN Boxes */
+    .pin-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .pin-box {
+      width: 48px;
+      height: 58px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.75rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+      -moz-appearance: textfield;
+      position: relative;
+    }
+
+    .pin-box::-webkit-outer-spin-button,
+    .pin-box::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .pin-box:focus {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.08);
+      box-shadow: 
+        0 0 0 3px rgba(16, 185, 129, 0.25),
+        0 4px 12px rgba(16, 185, 129, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .pin-box.filled {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: #34d399;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Keypad Grid (Sleek Apple/Fintech Aesthetic) */
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      max-width: 320px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .keypad-btn {
+      background: rgba(22, 32, 50, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      color: #f8fafc;
+      font-family: inherit;
+      padding: 0.75rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .keypad-btn:hover {
+      background: rgba(30, 41, 65, 0.9);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.3);
+    }
+
+    .keypad-btn:active {
+      transform: scale(0.95);
+      background: #10b981;
+      border-color: #10b981;
+      color: #06090f;
+    }
+
+    .keypad-btn:active .keypad-sub {
+      color: rgba(6, 9, 15, 0.8);
+    }
+
+    .keypad-num {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .keypad-sub {
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      margin-top: 0.15rem;
+    }
+
+    .keypad-btn.action-btn {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .keypad-btn.action-btn:hover {
+      color: #f1f5f9;
+      background: rgba(22, 32, 50, 0.8);
+    }
+
+    /* Submit Button */
+    .btn-unlock {
+      width: 100%;
+      padding: 0.95rem;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: #06090f;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      box-shadow: 
+        0 4px 15px rgba(16, 185, 129, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-unlock:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 8px 25px rgba(16, 185, 129, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    }
+
+    .btn-unlock:active {
+      transform: translateY(0);
+    }
+
+    .btn-unlock:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Error Alert */
+    .error-banner {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1.35rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    }
+
+    .shake {
+      animation: shakeAnim 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shakeAnim {
+      10%, 90% { transform: translate3d(-2px, 0, 0); }
+      20%, 80% { transform: translate3d(4px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    /* Footer Meta */
+    .card-footer-meta {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      color: #64748b;
+    }
+
+    .env-tag {
+      font-family: 'JetBrains Mono', monospace;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .pin-card {
+        padding: 2rem 1.25rem 1.75rem;
+        border-radius: 22px;
+      }
+      .pin-box {
+        width: 42px;
+        height: 52px;
+        font-size: 1.5rem;
+        border-radius: 10px;
+      }
+      .keypad-grid {
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Aurora Glow Canvas -->
+  <div class="aurora-bg">
+    <div class="aurora-orb-1"></div>
+    <div class="aurora-orb-2"></div>
+    <div class="dot-grid"></div>
+  </div>
+
+  <!-- Central Glass Security Card -->
+  <div class="pin-card" id="pin-card">
+    <div class="card-top-glow"></div>
+
+    <!-- Animated Security Icon -->
+    <div class="brand-icon-wrapper">
+      <div class="brand-icon-bg"></div>
+      <div class="brand-icon">
+        <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Clearance Badge -->
+    <div class="security-badge">
+      <span class="security-badge-dot"></span>
+      <span>Enterprise Authentication</span>
+    </div>
+
+    <h1 class="pin-title">Security PIN Lock</h1>
+    <p class="pin-desc">
+      Enter the <strong><%= expectedLength %>-digit security PIN</strong> to access the workspace.
+    </p>
+
+    <!-- Error Alert Banner -->
+    <div class="error-banner" id="error-banner" style="<%= error ? 'display:flex;' : 'display:none;' %>">
+      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span id="error-text"><%= error || '' %></span>
+    </div>
+
+    <form id="pin-form" method="POST" action="/auth/pin">
+      <input type="hidden" name="pin" id="full-pin-input">
+
+      <!-- 6-digit input boxes -->
+      <div class="pin-boxes" id="pin-boxes-container">
+        <% for(let i = 0; i < expectedLength; i++) { %>
+          <input
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="1"
+            class="pin-box"
+            data-index="<%= i %>"
+            autocomplete="off"
+            aria-label="Digit <%= i + 1 %>"
+          >
+        <% } %>
+      </div>
+
+      <!-- Touch Keypad with Apple-style secondary letters -->
+      <div class="keypad-grid">
+        <button type="button" class="keypad-btn" data-key="1">
+          <span class="keypad-num">1</span>
+          <span class="keypad-sub">&nbsp;</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="2">
+          <span class="keypad-num">2</span>
+          <span class="keypad-sub">ABC</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="3">
+          <span class="keypad-num">3</span>
+          <span class="keypad-sub">DEF</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="4">
+          <span class="keypad-num">4</span>
+          <span class="keypad-sub">GHI</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="5">
+          <span class="keypad-num">5</span>
+          <span class="keypad-sub">JKL</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="6">
+          <span class="keypad-num">6</span>
+          <span class="keypad-sub">MNO</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="7">
+          <span class="keypad-num">7</span>
+          <span class="keypad-sub">PQRS</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="8">
+          <span class="keypad-num">8</span>
+          <span class="keypad-sub">TUV</span>
+        </button>
+        <button type="button" class="keypad-btn" data-key="9">
+          <span class="keypad-num">9</span>
+          <span class="keypad-sub">WXYZ</span>
+        </button>
+        <button type="button" class="keypad-btn action-btn" id="btn-clear" title="Clear all digits">
+          Clear
+        </button>
+        <button type="button" class="keypad-btn" data-key="0">
+          <span class="keypad-num">0</span>
+          <span class="keypad-sub">+</span>
+        </button>
+        <button type="button" class="keypad-btn action-btn" id="btn-backspace" title="Delete previous digit">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6-7h12a2 2 0 012 2v10a2 2 0 01-2 2H9l-6-7z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Unlock Action Button -->
+      <button type="submit" class="btn-unlock" id="btn-unlock">
+        <svg width="19" height="19" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+        </svg>
+        <span>Unlock Platform</span>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pinBoxes = document.querySelectorAll('.pin-box');
+      const fullPinInput = document.getElementById('full-pin-input');
+      const pinForm = document.getElementById('pin-form');
+      const errorBanner = document.getElementById('error-banner');
+      const errorText = document.getElementById('error-text');
+      const pinCard = document.getElementById('pin-card');
+      const btnUnlock = document.getElementById('btn-unlock');
+      const keypadBtns = document.querySelectorAll('.keypad-btn[data-key]');
+      const btnClear = document.getElementById('btn-clear');
+      const btnBackspace = document.getElementById('btn-backspace');
+
+      const totalDigits = pinBoxes.length;
+
+      // Auto-focus first box smoothly
+      if (pinBoxes.length > 0) {
+        setTimeout(() => pinBoxes[0].focus(), 200);
+      }
+
+      function getEnteredPin() {
+        let pin = '';
+        pinBoxes.forEach(box => { pin += box.value; });
+        return pin;
+      }
+
+      function updateFullPinInput() {
+        const pin = getEnteredPin();
+        fullPinInput.value = pin;
+        return pin;
+      }
+
+      function showError(msg) {
+        errorText.textContent = msg;
+        errorBanner.style.display = 'flex';
+        pinCard.classList.remove('shake');
+        void pinCard.offsetWidth; // trigger reflow
+        pinCard.classList.add('shake');
+      }
+
+      function hideError() {
+        errorBanner.style.display = 'none';
+      }
+
+      // Input box typing events
+      pinBoxes.forEach((box, idx) => {
+        box.addEventListener('input', (e) => {
+          hideError();
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val ? val[0] : '';
+
+          if (val) {
+            box.classList.add('filled');
+            if (idx < totalDigits - 1) {
+              pinBoxes[idx + 1].focus();
+            } else {
+              // Last box filled, auto submit
+              submitPin();
+            }
+          } else {
+            box.classList.remove('filled');
+          }
+          updateFullPinInput();
+        });
+
+        box.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !box.value && idx > 0) {
+            pinBoxes[idx - 1].focus();
+          } else if (e.key === 'ArrowLeft' && idx > 0) {
+            pinBoxes[idx - 1].focus();
+          } else if (e.key === 'ArrowRight' && idx < totalDigits - 1) {
+            pinBoxes[idx + 1].focus();
+          }
+        });
+
+        box.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+          if (!pastedData) return;
+
+          for (let i = 0; i < totalDigits; i++) {
+            if (i < pastedData.length) {
+              pinBoxes[i].value = pastedData[i];
+              pinBoxes[i].classList.add('filled');
+            } else {
+              pinBoxes[i].value = '';
+              pinBoxes[i].classList.remove('filled');
+            }
+          }
+
+          updateFullPinInput();
+
+          if (pastedData.length >= totalDigits) {
+            pinBoxes[totalDigits - 1].focus();
+            submitPin();
+          } else {
+            pinBoxes[Math.min(pastedData.length, totalDigits - 1)].focus();
+          }
+        });
+      });
+
+      // Keypad button click
+      keypadBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const digit = btn.getAttribute('data-key');
+          for (let i = 0; i < totalDigits; i++) {
+            if (!pinBoxes[i].value) {
+              pinBoxes[i].value = digit;
+              pinBoxes[i].classList.add('filled');
+              if (i < totalDigits - 1) {
+                pinBoxes[i + 1].focus();
+              } else {
+                submitPin();
+              }
+              break;
+            }
+          }
+          updateFullPinInput();
+        });
+      });
+
+      // Backspace button click
+      if (btnBackspace) {
+        btnBackspace.addEventListener('click', () => {
+          for (let i = totalDigits - 1; i >= 0; i--) {
+            if (pinBoxes[i].value) {
+              pinBoxes[i].value = '';
+              pinBoxes[i].classList.remove('filled');
+              pinBoxes[i].focus();
+              break;
+            }
+          }
+          updateFullPinInput();
+        });
+      }
+
+      // Clear button click
+      if (btnClear) {
+        btnClear.addEventListener('click', () => {
+          pinBoxes.forEach(box => {
+            box.value = '';
+            box.classList.remove('filled');
+          });
+          pinBoxes[0].focus();
+          updateFullPinInput();
+          hideError();
+        });
+      }
+
+      async function submitPin() {
+        const pin = updateFullPinInput();
+        if (pin.length < totalDigits) {
+          showError(`Please enter all ${totalDigits} digits of the security PIN.`);
+          return;
+        }
+
+        btnUnlock.disabled = true;
+        btnUnlock.innerHTML = `
+          <svg class="qr-spinner" style="width:18px;height:18px;border-width:2px;display:inline-block;vertical-align:middle;" viewBox="0 0 24 24"></svg>
+          <span>Verifying PIN...</span>
+        `;
+
+        try {
+          const res = await fetch('/auth/pin', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ pin })
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            btnUnlock.innerHTML = `✓ Unlocked Successfully!`;
+            sessionStorage.setItem('pin_tab_session', 'verified');
+            window.location.href = data.redirect || '/';
+          } else {
+            sessionStorage.removeItem('pin_tab_session');
+            showError(data.error || 'Incorrect PIN!');
+            pinBoxes.forEach(b => {
+              b.value = '';
+              b.classList.remove('filled');
+            });
+            pinBoxes[0].focus();
+          }
+        } catch (err) {
+          sessionStorage.setItem('pin_tab_session', 'verified');
+          pinForm.submit();
+        } finally {
+          btnUnlock.disabled = false;
+          btnUnlock.innerHTML = `
+            <svg width="19" height="19" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+            </svg>
+            <span>Unlock Platform</span>
+          `;
+        }
+      }
+
+      pinForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitPin();
+      });
+    });
+  </script>
+</body>
+</html>
