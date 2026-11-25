@@ -45,6 +45,12 @@ The platform enables users to pair their WhatsApp accounts using real-time QR co
   - Multer upload filtering with strict MIME and extension checking.
   - Resilient database layer: seamlessly operates with an external MongoDB URI or automatically spins up an embedded in-memory MongoDB during local testing.
 
+- **Bespoke UI & Zero-Browser-Alert Architecture:**
+  - **Zero Native Alerts/Confirms:** Native `alert()` and `confirm()` are strictly forbidden across the codebase.
+  - **Bespoke Glassmorphic Dialogs:** Built with custom vanilla JS/CSS (`showToast()`, `showConfirmDialog()`, `showAlertDialog()`).
+  - **100% English Web Interface:** Clean, internationalized enterprise interface matching modern dark aesthetics.
+  - **Multi-Account Manager:** Up to 5 concurrent WhatsApp accounts with isolated sockets, conditional pairing, and full CRUD control over every slot.
+
 ---
 
 ## 📂 Project Architecture

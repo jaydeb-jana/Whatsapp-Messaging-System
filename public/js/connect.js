@@ -336,9 +336,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Remove Account Slot
+  // Remove Account Slot (Bespoke Glassmorphic Modal Dialog - No Browser Confirm)
   window.removeAccountSlot = async (sessionId, slot) => {
-    if (!confirm(`Are you sure you want to remove Account #${slot}?`)) {
+    let confirmed = false;
+    if (typeof window.showConfirmDialog === 'function') {
+      confirmed = await window.showConfirmDialog({
+        title: `Remove Account #${slot}?`,
+        message: `Are you sure you want to remove Account #${slot}? All credentials and session data will be permanently purged.`,
+        confirmText: 'Yes, Remove Account',
+        cancelText: 'Keep Account',
+        type: 'danger'
+      });
+    } else {
+      confirmed = true;
+    }
+
+    if (!confirmed) {
       return;
     }
 
@@ -434,7 +447,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Disconnect button from workspace view
   if (btnDisconnect) {
     btnDisconnect.addEventListener('click', async () => {
-      if (!confirm(`Are you sure you want to disconnect and logout Account #${activeSlot}?`)) {
+      let confirmed = false;
+      if (typeof window.showConfirmDialog === 'function') {
+        confirmed = await window.showConfirmDialog({
+          title: `Disconnect Account #${window.activeSlot}?`,
+          message: `Are you sure you want to disconnect Account #${window.activeSlot}? The session will be logged out and you will need to scan QR code again.`,
+          confirmText: 'Yes, Disconnect',
+          cancelText: 'Cancel',
+          type: 'warning'
+        });
+      } else {
+        confirmed = true;
+      }
+
+      if (!confirmed) {
         return;
       }
       try {
