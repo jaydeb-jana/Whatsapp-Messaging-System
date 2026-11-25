@@ -1,0 +1,513 @@
+<!-- Documentation & API Reference -->
+<div class="docs-container" style="max-width: 1100px; margin: 0 auto; padding-bottom: 3rem;">
+
+  <!-- Hero Banner -->
+  <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid rgba(16, 185, 129, 0.3);">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+      <div style="max-width: 680px;">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.78rem; color: #10b981; font-weight: 700; margin-bottom: 0.75rem;">
+          <span>PRO ENTERPRISE GUIDE</span>
+        </div>
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: #fff; line-height: 1.25; margin-bottom: 0.5rem;">
+          WhatsFlow Pro Documentation &amp; API Reference
+        </h1>
+        <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
+          Everything you need to send <strong>Text messages</strong>, high-res <strong>Images</strong>, <strong>Videos</strong>, and <strong>Documents</strong> (PDFs, spreadsheets, archives), pair accounts via QR Code or Phone Number, and automate messaging via REST API.
+        </p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end;">
+        <a href="/messages/send" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          Open Message Composer
+        </a>
+        <a href="/whatsapp/connect" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Manage Accounts (5 Slots)
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Pills -->
+    <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 1.25rem;">
+      <a href="#quick-overview" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">🚀 Overview</a>
+      <a href="#account-connection" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">📱 Connecting Accounts</a>
+      <a href="#text-messaging" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">💬 Text &amp; Bengali Unicode</a>
+      <a href="#media-messaging" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">🖼️ Images &amp; Videos</a>
+      <a href="#document-messaging" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">📄 Document Attachments</a>
+      <a href="#rest-api" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">⚡ REST API Reference</a>
+      <a href="#phone-rules" class="btn btn-secondary btn-sm" style="font-size: 0.78rem;">🌐 Phone Formats</a>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Quick Overview -->
+  <section id="quick-overview" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        System Architecture &amp; Capabilities
+      </h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
+      <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.15rem;">
+        <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">📱</div>
+        <h3 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Multi-Account (5 Slots)</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+          Connect up to 5 independent WhatsApp accounts concurrently. Each slot runs an isolated Baileys socket with zero cross-talk.
+        </p>
+      </div>
+
+      <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.15rem;">
+        <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">⚡</div>
+        <h3 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Dual Login Methods</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+          Pair using live dynamic <strong>QR Code</strong> or WhatsApp's official <strong>Phone Number 8-digit Pairing Code</strong>.
+        </p>
+      </div>
+
+      <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.15rem;">
+        <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">📦</div>
+        <h3 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">All Message Formats</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+          Dispatch text messages, high-res photos, MP4 videos, and PDF/Word/Excel documents up to 50MB with custom filenames.
+        </p>
+      </div>
+
+      <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.15rem;">
+        <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">🔒</div>
+        <h3 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">Security &amp; PIN Lock</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+          Protected by a 6-digit security PIN (`APP_PIN`). Refreshing preserves session, while closing the tab locks the workspace.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: How to Connect WhatsApp Accounts -->
+  <section id="account-connection" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+        </svg>
+        How to Connect WhatsApp Accounts (QR Code &amp; Phone Pairing)
+      </h2>
+    </div>
+
+    <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem;">
+      Navigate to <a href="/whatsapp/connect" style="color: var(--text-accent); font-weight: 600;">Manage Accounts</a>. If you have no accounts connected, click <strong>+ Link WhatsApp Account</strong> or the <strong>+ Add Account</strong> card. You can choose either of two pairing methods:
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+      <!-- Method 1: QR Code -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <span class="badge badge-success">Method 1</span>
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff;">Scan QR Code</h3>
+        </div>
+        <ol class="instructions-list" style="margin-left: 0.5rem;">
+          <li><div>Open <strong>WhatsApp</strong> on your mobile device.</div></li>
+          <li><div>Tap <strong>Settings</strong> (iOS) or <strong>Three Dots ⋮</strong> (Android) &gt; <strong>Linked Devices</strong>.</div></li>
+          <li><div>Tap <strong>Link a Device</strong> and point your camera at the live QR code displayed in the modal.</div></li>
+          <li><div>Once scanned, the account connects automatically and saves to your dashboard.</div></li>
+        </ol>
+      </div>
+
+      <!-- Method 2: Phone Pairing Code -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+          <span class="badge badge-info">Method 2</span>
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff;">Pair with Phone Number</h3>
+        </div>
+        <ol class="instructions-list" style="margin-left: 0.5rem;">
+          <li><div>In the pairing modal, click the <strong>Pair with Phone Number</strong> tab.</div></li>
+          <li><div>Enter your full phone number with country code (e.g. <code>+8801712345678</code> or <code>+12025550199</code>) and click <strong>⚡ Get Code</strong>.</div></li>
+          <li><div>An official 8-digit pairing code (e.g. <code>1234-5678</code>) will be generated instantly.</div></li>
+          <li><div>On your phone: open WhatsApp &gt; <strong>Linked Devices</strong> &gt; <strong>Link a Device</strong> &gt; tap <strong>Link with phone number instead</strong> at the bottom.</div></li>
+          <li><div>Enter the 8-character code. The session immediately authorizes and connects!</div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: How to Send Messages -->
+  <section id="text-messaging" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        1. Text Messages &amp; Bengali Unicode Support
+      </h2>
+    </div>
+
+    <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+      WhatsFlow Pro natively supports full UTF-8 Unicode, allowing you to send messages in <strong>Bengali (বাংলা)</strong>, Hindi, Arabic, English, and with emojis without encoding distortion or character dropping.
+    </p>
+
+    <!-- Formatting Table -->
+    <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+      <h4 style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">WhatsApp Text Formatting Syntax:</h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.82rem;">
+        <div><code>*bold*</code> &rarr; <strong>bold</strong></div>
+        <div><code>_italic_</code> &rarr; <em>italic</em></div>
+        <div><code>~strikethrough~</code> &rarr; <del>strikethrough</del></div>
+        <div><code>```monospace```</code> &rarr; <code style="color: #10b981;">monospace</code></div>
+      </div>
+    </div>
+
+    <!-- Web UI Instructions -->
+    <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">Sending via Web Interface:</h4>
+    <ol class="instructions-list" style="margin-left: 0.5rem; margin-bottom: 1.25rem;">
+      <li><div>Go to <a href="/messages/send" style="color: var(--text-accent);">Send Message</a>.</div></li>
+      <li><div>Select your sender WhatsApp account from the dropdown (Slot 1 to 5).</div></li>
+      <li><div>Keep the <strong>💬 Text Message</strong> tab selected.</div></li>
+      <li><div>Enter the recipient's phone number (e.g. <code>+8801712345678</code> or <code>01712345678</code>).</div></li>
+      <li><div>Type or paste your message (Bengali, English, emojis, multi-line) and click <strong>🚀 Dispatch Message Now</strong>.</div></li>
+    </ol>
+  </section>
+
+  <!-- SECTION 4: Media Messaging (Images & Videos) -->
+  <section id="media-messaging" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        2. Image &amp; Video Media Dispatch
+      </h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+      <!-- Images -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🖼️ Image Messages</span>
+        </h3>
+        <ul style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-left: 1.25rem; margin-bottom: 1rem;">
+          <li><strong>Supported formats:</strong> JPG, JPEG, PNG, WEBP, GIF.</li>
+          <li><strong>Max file size:</strong> Up to 50MB.</li>
+          <li><strong>Captions:</strong> Full caption support with text, emojis, and Bengali Unicode.</li>
+          <li><strong>Preview:</strong> Live drag-and-drop preview in the web composer.</li>
+        </ul>
+        <div style="font-size: 0.8rem; color: var(--text-muted); background: var(--bg-main); padding: 0.65rem; border-radius: 6px;">
+          <em>Tip:</em> PNG and JPG images are automatically delivered as inline viewable photos in the recipient's WhatsApp chat.
+        </div>
+      </div>
+
+      <!-- Videos -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>🎥 Video Messages</span>
+        </h3>
+        <ul style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-left: 1.25rem; margin-bottom: 1rem;">
+          <li><strong>Supported formats:</strong> MP4, 3GP, MOV.</li>
+          <li><strong>Max file size:</strong> Up to 50MB.</li>
+          <li><strong>Captions:</strong> Optional caption displayed beneath the video player.</li>
+          <li><strong>Playback:</strong> Recipient can stream and play directly in WhatsApp.</li>
+        </ul>
+        <div style="font-size: 0.8rem; color: var(--text-muted); background: var(--bg-main); padding: 0.65rem; border-radius: 6px;">
+          <em>Tip:</em> H.264 encoded MP4 files provide the highest quality and fastest playback compatibility.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Document Messaging -->
+  <section id="document-messaging" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        3. Document Messages &amp; Custom Filename Configuration
+      </h2>
+    </div>
+
+    <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem;">
+      Dispatch professional invoices, contracts, spreadsheets, reports, and compressed archives. You can specify a <strong>Custom Filename</strong> so the recipient sees clean branding (e.g. <code>Invoice_WhatsFlow_2026.pdf</code>) regardless of the file's original name on disk.
+    </p>
+
+    <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+      <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Supported Document Extensions:</h4>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <span class="badge badge-info">.pdf (Acrobat)</span>
+        <span class="badge badge-info">.docx / .doc (Word)</span>
+        <span class="badge badge-info">.xlsx / .xls / .csv (Excel)</span>
+        <span class="badge badge-info">.pptx / .ppt (PowerPoint)</span>
+        <span class="badge badge-info">.zip / .rar / .7z (Archives)</span>
+        <span class="badge badge-info">.txt / .json / .xml</span>
+        <span class="badge badge-info">.mp3 / .wav (Audio)</span>
+      </div>
+    </div>
+
+    <h4 style="font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem;">How to Send Documents via Web Composer:</h4>
+    <ol class="instructions-list" style="margin-left: 0.5rem;">
+      <li><div>Open <a href="/messages/send" style="color: var(--text-accent);">Send Message</a> and switch to the <strong>📄 Document</strong> tab.</div></li>
+      <li><div>Select or drag-and-drop your file (e.g. <code>report.pdf</code>).</div></li>
+      <li><div><em>(Optional)</em> In the <strong>Custom File Display Name</strong> field, enter the desired display name e.g. <code>Official_Audit_Report.pdf</code>.</div></li>
+      <li><div><em>(Optional)</em> Add a caption message accompanying the file.</div></li>
+      <li><div>Click <strong>🚀 Dispatch Message Now</strong>. Delivery is logged in real-time under Message History.</div></li>
+    </ol>
+  </section>
+
+  <!-- SECTION 6: REST API Reference & Interactive Code Examples -->
+  <section id="rest-api" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <div>
+        <h2 class="card-title">
+          <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+          </svg>
+          REST API Developer Reference
+        </h2>
+        <p class="card-subtitle">Integrate WhatsApp messaging into your own applications, bots, CRMs, or backend scripts.</p>
+      </div>
+    </div>
+
+    <!-- API Base Information -->
+    <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; line-height: 1.6;">
+      <div><strong>Base API Endpoint:</strong> <code>http://localhost:4000/api</code></div>
+      <div><strong>Content Types:</strong> <code>application/json</code> (for text) or <code>multipart/form-data</code> (for media/documents)</div>
+      <div><strong>Security:</strong> Accessible on localhost, or authenticated via session cookie / security PIN</div>
+    </div>
+
+    <!-- ENDPOINT 1: Send Text Message -->
+    <div style="margin-bottom: 2rem;">
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+        <span class="badge badge-success" style="font-weight: 800; font-size: 0.8rem;">POST</span>
+        <code style="font-size: 0.95rem; font-weight: 700; color: #fff;">/api/messages/send</code>
+        <span style="color: var(--text-muted); font-size: 0.82rem;">— Send Text Message (Unicode &amp; Bengali)</span>
+      </div>
+
+      <!-- Code Box -->
+      <div class="code-box-container">
+        <div class="code-box-header">
+          <span>cURL (Text Message)</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-curl-text', this)">Copy cURL</button>
+        </div>
+        <pre><code id="code-curl-text">curl -X POST http://localhost:4000/api/messages/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "recipient": "+8801712345678",
+    "messageType": "text",
+    "content": "আসসালামু আলাইকুম! *WhatsFlow Pro* থেকে আপনার অর্ডার নিশ্চিত করা হয়েছে। 🚀",
+    "senderAccount": "account_1"
+  }'</code></pre>
+      </div>
+
+      <!-- Python Tab -->
+      <div class="code-box-container" style="margin-top: 0.75rem;">
+        <div class="code-box-header">
+          <span>Python (requests)</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-py-text', this)">Copy Python</button>
+        </div>
+        <pre><code id="code-py-text">import requests
+
+payload = {
+    "recipient": "+8801712345678",
+    "messageType": "text",
+    "content": "Hello! Your appointment is confirmed for tomorrow at 10:00 AM.",
+    "senderAccount": "account_1"
+}
+
+response = requests.post("http://localhost:4000/api/messages/send", json=payload)
+print(response.json())</code></pre>
+      </div>
+    </div>
+
+    <!-- ENDPOINT 2: Send Image / Media -->
+    <div style="margin-bottom: 2rem;">
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+        <span class="badge badge-success" style="font-weight: 800; font-size: 0.8rem;">POST</span>
+        <code style="font-size: 0.95rem; font-weight: 700; color: #fff;">/api/messages/send</code>
+        <span style="color: var(--text-muted); font-size: 0.82rem;">— Send Image with Caption (multipart/form-data)</span>
+      </div>
+
+      <div class="code-box-container">
+        <div class="code-box-header">
+          <span>cURL (Image Message)</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-curl-image', this)">Copy cURL</button>
+        </div>
+        <pre><code id="code-curl-image">curl -X POST http://localhost:4000/api/messages/send \
+  -F "recipient=+8801712345678" \
+  -F "messageType=image" \
+  -F "content=Check out our newest catalog design! 🌟" \
+  -F "senderAccount=account_1" \
+  -F "media=@/path/to/product.png"</code></pre>
+      </div>
+    </div>
+
+    <!-- ENDPOINT 3: Send Document -->
+    <div style="margin-bottom: 2rem;">
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+        <span class="badge badge-success" style="font-weight: 800; font-size: 0.8rem;">POST</span>
+        <code style="font-size: 0.95rem; font-weight: 700; color: #fff;">/api/messages/send</code>
+        <span style="color: var(--text-muted); font-size: 0.82rem;">— Send Document (PDF/Doc/Zip) with Custom Filename</span>
+      </div>
+
+      <div class="code-box-container">
+        <div class="code-box-header">
+          <span>cURL (Document with Custom Filename)</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-curl-doc', this)">Copy cURL</button>
+        </div>
+        <pre><code id="code-curl-doc">curl -X POST http://localhost:4000/api/messages/send \
+  -F "recipient=+8801712345678" \
+  -F "messageType=document" \
+  -F "customFileName=Invoice_November_2026.pdf" \
+  -F "content=Please find attached your official billing invoice." \
+  -F "senderAccount=account_1" \
+  -F "media=@/path/to/invoice.pdf"</code></pre>
+      </div>
+
+      <!-- Node.js Example -->
+      <div class="code-box-container" style="margin-top: 0.75rem;">
+        <div class="code-box-header">
+          <span>JavaScript (Node.js Fetch / FormData)</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-js-doc', this)">Copy JavaScript</button>
+        </div>
+        <pre><code id="code-js-doc">const fs = require('fs');
+
+const formData = new FormData();
+formData.append('recipient', '+8801712345678');
+formData.append('messageType', 'document');
+formData.append('customFileName', 'Quarterly_Report_2026.pdf');
+formData.append('content', 'Attached is the quarterly progress report.');
+formData.append('media', new Blob([fs.readFileSync('report.pdf')]), 'report.pdf');
+
+fetch('http://localhost:4000/api/messages/send', {
+  method: 'POST',
+  body: formData
+})
+.then(res => res.json())
+.then(data => console.log('Message dispatched:', data))
+.catch(err => console.error('Error:', err));</code></pre>
+      </div>
+    </div>
+
+    <!-- ENDPOINT 4: Accounts Status -->
+    <div style="margin-bottom: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+        <span class="badge badge-info" style="font-weight: 800; font-size: 0.8rem;">GET</span>
+        <code style="font-size: 0.95rem; font-weight: 700; color: #fff;">/api/whatsapp/accounts</code>
+        <span style="color: var(--text-muted); font-size: 0.82rem;">— Query Active Account Channels (0 to 5 Slots)</span>
+      </div>
+
+      <div class="code-box-container">
+        <div class="code-box-header">
+          <span>cURL</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-curl-accs', this)">Copy cURL</button>
+        </div>
+        <pre><code id="code-curl-accs">curl -X GET http://localhost:4000/api/whatsapp/accounts</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: Phone Number Rules & Idempotency -->
+  <section id="phone-rules" class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h2 class="card-title">
+        <svg width="22" height="22" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+        Phone Number Normalization &amp; Idempotency Protection
+      </h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+      <div>
+        <h3 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Phone Number Formats Accepted:</h3>
+        <ul style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; margin-left: 1.25rem;">
+          <li><strong>Bangladesh:</strong> <code>+88017XXXXXXXX</code>, <code>88017XXXXXXXX</code>, or local <code>017XXXXXXXX</code> (auto-normalized to E.164).</li>
+          <li><strong>International:</strong> Full country code without spaces (e.g. <code>+12025550199</code>, <code>+447911123456</code>).</li>
+          <li>Spaces, hyphens, and brackets are automatically stripped cleanly by the server validator.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Duplicate Prevention (Idempotency):</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+          To prevent accidentally sending duplicate WhatsApp messages during network retries or repeated webhook triggers, pass an <code>idempotencyKey</code> (UUID string).
+          If the key has already been dispatched, WhatsFlow Pro returns the existing message record immediately without re-sending.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Docs Page Styling -->
+<style>
+  .code-box-container {
+    background: #090e17;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .code-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+  .btn-copy-code {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-copy-code:hover {
+    background: rgba(16, 185, 129, 0.25);
+    color: #fff;
+  }
+  .code-box-container pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  .code-box-container code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    line-height: 1.5;
+  }
+</style>
+
+<!-- Copy Code Snippet Script -->
+<script>
+  function copyCodeSnippet(elementId, btn) {
+    const codeEl = document.getElementById(elementId);
+    if (!codeEl) return;
+    const text = codeEl.innerText || codeEl.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const originalText = btn.textContent;
+      btn.textContent = 'Copied!';
+      if (typeof window.showToast === 'function') {
+        window.showToast('Code snippet copied to clipboard!', 'success');
+      }
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
+    }).catch(() => {
+      if (typeof window.showToast === 'function') {
+        window.showToast('Failed to copy to clipboard', 'warn');
+      }
+    });
+  }
+</script>

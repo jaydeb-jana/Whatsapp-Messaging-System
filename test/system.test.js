@@ -142,6 +142,12 @@ async function runTests() {
   assert.strictEqual(sendRes.status, 302);
   console.log('  ✅ GET /messages/send cleanly redirected 302 to /whatsapp/connect');
 
+  // Test GET /docs
+  const docsRes = await fetchEndpoint('/docs');
+  assert.strictEqual(docsRes.status, 200);
+  assert(docsRes.body.includes('Documentation') || docsRes.body.includes('REST API Developer Reference'));
+  console.log('  ✅ GET /docs rendered 200 OK with complete documentation');
+
   // Test GET /messages/history
   const historyRes = await fetchEndpoint('/messages/history');
   assert.strictEqual(historyRes.status, 200);

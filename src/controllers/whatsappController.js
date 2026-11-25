@@ -185,12 +185,12 @@ exports.removeAccountApi = async (req, res) => {
 exports.reconnectApi = async (req, res) => {
   try {
     const sessionId = req.body.sessionId || req.body.slot || 'account_1';
-    logger.info(`User requested WhatsApp reconnection for [${sessionId}]`);
-    const result = await baileysService.initSocket(sessionId);
+    logger.info(`User requested WhatsApp reconnection for [${sessionId}]. Purging old session and initializing fresh...`);
+    const result = await baileysService.reconnect(sessionId, true);
     return res.json({
       success: true,
       data: result,
-      message: `Reconnection initiated for ${result.label}`
+      message: `Reconnection initiated with fresh session for ${result.label}`
     });
   } catch (err) {
     logger.error('Error reconnecting WhatsApp:', err);
@@ -204,8 +204,11 @@ exports.reconnectApi = async (req, res) => {
 exports.initConnect = async (req, res) => {
   try {
     const sessionId = req.body.sessionId || req.body.slot || 'account_1';
-    logger.info(`User requested WhatsApp connection initialization for [${sessionId}]`);
-    const result = await baileysService.initSocket(sessionId);
+    const forceFresh = req.body.forceFresh === true;
+    logger.info(`User requested WhatsApp connection initialization for [${sessionId}] (forceFresh=${forceFresh})`);
+    const result = forceFresh
+      ? await baileysService.reconnect(sessionId, true)
+      : await baileysService.initSocket(sessionId, false);
     return res.json({
       success: true,
       data: result,

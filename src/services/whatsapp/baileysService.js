@@ -96,8 +96,8 @@ class SingleAccountSession {
     }
   }
 
-  async initSocket() {
-    if (this.status === 'connecting' || this.status === 'connected') {
+  async initSocket(forceFresh = false) {
+    if (!forceFresh && (this.status === 'connecting' || this.status === 'connected')) {
       logger.info(`[${this.label}] Socket already in state: ${this.status}`);
       return this.getStatus();
     }
@@ -105,6 +105,16 @@ class SingleAccountSession {
     if (this.reconnectTimeout) {
       clearTimeout(this.reconnectTimeout);
       this.reconnectTimeout = null;
+    }
+
+    // If forcing fresh or previously disconnected, purge old session files on disk first
+    if (forceFresh || this.status === 'disconnected') {
+      logger.info(`[${this.label}] Purging previous session files before initializing connection...`);
+      clearSession(this.sessionId);
+      this.qrCode = null;
+      this.qrDataUrl = null;
+      this.pairingCode = null;
+      this.pairingPhoneNumber = null;
     }
 
     this.isExplicitDisconnect = false;
@@ -377,6 +387,41 @@ class SingleAccountSession {
     }
   }
 
+  async reconnect(forceFresh = true) {
+    logger.info(`[${this.label}] Explicit reconnect triggered (forceFresh=${forceFresh}). Purging old session files and resetting socket...`);
+
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
+    if (this.socket) {
+      try {
+        this.socket.ev.removeAllListeners();
+        if (this.socket.ws) this.socket.ws.close();
+      } catch (cleanupErr) {
+        // ignore
+      }
+      this.socket = null;
+    }
+
+    if (forceFresh || this.status !== 'connected') {
+      clearSession(this.sessionId);
+      logger.info(`[${this.label}] Purged session files from disk for clean reconnection.`);
+    }
+
+    this.status = 'disconnected';
+    this.qrCode = null;
+    this.qrDataUrl = null;
+    this.pairingCode = null;
+    this.pairingPhoneNumber = null;
+    this.reconnectAttempts = 0;
+    this.isReconnecting = false;
+    this.isExplicitDisconnect = false;
+
+    return await this.initSocket(false);
+  }
+
   async requestPairingCode(phoneNumber) {
     if (!phoneNumber) {
       throw new Error('Phone number is required');
@@ -495,7 +540,8 @@ class MultiAccountBaileysService {
       const session = this.accounts.get(sessionId);
       if (session && !session.isAdded && !session.isConnected()) {
         logger.info(`Starting temporary pairing handshake for ${session.label} (${sessionId})...`);
-        session.initSocket().catch(err => {
+        // Purge any stale session files before pairing handshake
+        session.reconnect(true).catch(err => {
           logger.warn(`Pairing initialization warning for ${session.label}:`, err.message);
         });
         return {
@@ -622,9 +668,14 @@ class MultiAccountBaileysService {
     return null;
   }
 
-  async initSocket(sessionId) {
+  async initSocket(sessionId, forceFresh = false) {
     const targetSession = this.getAccount(sessionId);
-    return await targetSession.initSocket();
+    return await targetSession.initSocket(forceFresh);
+  }
+
+  async reconnect(sessionId, forceFresh = true) {
+    const targetSession = this.getAccount(sessionId);
+    return await targetSession.reconnect(forceFresh);
   }
 
   async disconnect(sessionId, logout = true) {

@@ -30,6 +30,26 @@ exports.renderDashboard = async (req, res, next) => {
   }
 };
 
+exports.renderDocs = async (req, res, next) => {
+  try {
+    const statusInfo = baileysService.getStatus();
+    const accounts = baileysService.getAddedAccounts();
+    const connectedAccounts = baileysService.getConnectedAccounts();
+
+    res.render('docs/index', {
+      title: 'Documentation & API Reference',
+      page: 'docs',
+      statusInfo,
+      accounts,
+      connectedAccounts,
+      maxAccounts: baileysService.maxAccounts
+    });
+  } catch (err) {
+    logger.error('Error rendering documentation page:', err);
+    next(err);
+  }
+};
+
 exports.getStatsApi = async (req, res) => {
   try {
     const stats = await messageService.getStats();

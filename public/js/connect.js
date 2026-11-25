@@ -147,13 +147,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modalQrImg) modalQrImg.style.display = 'none';
       if (modalQrPlaceholder) {
         modalQrPlaceholder.style.display = 'flex';
-        modalQrPlaceholder.innerHTML = `<div class="qr-spinner"></div><span>Generating Reconnection QR...</span><span style="font-size:0.74rem;color:#64748b;font-weight:400;">Requesting fresh session token</span>`;
+        modalQrPlaceholder.innerHTML = `<div class="qr-spinner"></div><span>Purging old session & requesting fresh QR...</span><span style="font-size:0.74rem;color:#64748b;font-weight:400;">Starting clean WhatsApp handshake</span>`;
       }
 
       if (modalOverlay) modalOverlay.style.display = 'flex';
 
-      // Call connect to trigger QR
-      await fetch('/api/whatsapp/connect', {
+      // Call reconnect to purge old session and request fresh QR
+      await fetch('/api/whatsapp/reconnect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId })

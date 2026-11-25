@@ -83,6 +83,15 @@ async function testMultiAccountSystem() {
   );
   console.log('  ✅ Phone Number Pairing Code validation confirmed');
 
+  // Test 7: Verifying Reconnect purges session files before starting clean session
+  console.log('\n[TEST 7] Verifying Reconnect purges session files and starts clean session...');
+  const reconnectResult = await baileysService.reconnect('account_2', true);
+  assert.strictEqual(reconnectResult.sessionId, 'account_2');
+  assert.strictEqual(reconnectResult.status, 'connecting');
+  // Cancel the test connecting socket cleanly
+  await baileysService.cancelPairing('account_2');
+  console.log('  ✅ Reconnect session purge and fresh socket initialization confirmed');
+
   await disconnectDatabase();
 
   console.log('\n--- 🎉 ALL DYNAMIC PLUS (+) & CONDITIONAL PERSISTENCE TESTS PASSED! ---\n');

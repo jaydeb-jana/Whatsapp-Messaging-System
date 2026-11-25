@@ -55,6 +55,11 @@ async function testPinAuth() {
   assert.strictEqual(unauthRes.headers.location, '/auth/pin');
   console.log('  ✅ Unauthenticated request correctly redirected to /auth/pin (302)');
 
+  const unauthDocsRes = await request('/docs');
+  assert.strictEqual(unauthDocsRes.status, 302);
+  assert.strictEqual(unauthDocsRes.headers.location, '/auth/pin');
+  console.log('  ✅ Unauthenticated /docs request correctly redirected to /auth/pin (302)');
+
   // Test 3: Unauthenticated request to /api/stats should return 401
   console.log('\n[TEST 3] Verifying API lock protection...');
   const unauthApi = await request('/api/stats');
@@ -116,6 +121,13 @@ async function testPinAuth() {
   const authApiJson = JSON.parse(authApiRes.body);
   assert.strictEqual(authApiJson.success, true);
   console.log('  ✅ API accessible (200 OK) with PIN cookie');
+
+  const authDocsRes = await request('/docs', {
+    headers: { 'Cookie': cookieHeader }
+  });
+  assert.strictEqual(authDocsRes.status, 200);
+  assert(authDocsRes.body.includes('Documentation') || authDocsRes.body.includes('API Reference'));
+  console.log('  ✅ /docs opened successfully (200 OK) with PIN cookie');
 
   // Test 8: Logout / Lock session
   console.log('\n[TEST 8] Verifying session lock / logout...');
