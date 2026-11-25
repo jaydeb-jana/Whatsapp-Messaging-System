@@ -216,6 +216,10 @@
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
       -moz-appearance: textfield;
       position: relative;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
 
     .pin-box::-webkit-outer-spin-button,
@@ -224,7 +228,8 @@
       margin: 0;
     }
 
-    .pin-box:focus {
+    .pin-box:focus,
+    .pin-box.active {
       border-color: #10b981;
       background: rgba(16, 185, 129, 0.08);
       box-shadow: 
@@ -263,6 +268,8 @@
       align-items: center;
       justify-content: center;
       user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
@@ -407,6 +414,9 @@
         padding: 2rem 1.25rem 1.75rem;
         border-radius: 22px;
       }
+      .pin-boxes {
+        gap: 0.5rem;
+      }
       .pin-box {
         width: 42px;
         height: 52px;
@@ -415,6 +425,24 @@
       }
       .keypad-grid {
         gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .pin-boxes {
+        gap: 0.35rem;
+      }
+      .pin-box {
+        width: 36px;
+        height: 48px;
+        font-size: 1.3rem;
+        border-radius: 9px;
+      }
+      .keypad-btn {
+        padding: 0.65rem 0.35rem;
+      }
+      .keypad-num {
+        font-size: 1.2rem;
       }
     }
   </style>
@@ -468,13 +496,13 @@
         <% for(let i = 0; i < expectedLength; i++) { %>
           <input
             type="password"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="1"
-            class="pin-box"
+            inputmode="none"
+            readonly
+            class="pin-box <%= i === 0 ? 'active' : '' %>"
             data-index="<%= i %>"
             autocomplete="off"
             aria-label="Digit <%= i + 1 %>"
+            tabindex="-1"
           >
         <% } %>
       </div>
@@ -556,9 +584,19 @@
 
       const totalDigits = pinBoxes.length;
 
-      // Auto-focus first box smoothly
-      if (pinBoxes.length > 0) {
-        setTimeout(() => pinBoxes[0].focus(), 200);
+      function updateActiveBox() {
+        let firstEmptyIdx = -1;
+        pinBoxes.forEach((box, idx) => {
+          box.classList.remove('active');
+          if (!box.value && firstEmptyIdx === -1) {
+            firstEmptyIdx = idx;
+          }
+        });
+        if (firstEmptyIdx !== -1) {
+          pinBoxes[firstEmptyIdx].classList.add('active');
+        } else if (totalDigits > 0) {
+          pinBoxes[totalDigits - 1].classList.add('active');
+        }
       }
 
       function getEnteredPin() {
@@ -585,110 +623,136 @@
         errorBanner.style.display = 'none';
       }
 
-      // Input box typing events
-      pinBoxes.forEach((box, idx) => {
-        box.addEventListener('input', (e) => {
-          hideError();
-          const val = e.target.value.replace(/\D/g, '');
-          e.target.value = val ? val[0] : '';
-
-          if (val) {
-            box.classList.add('filled');
-            if (idx < totalDigits - 1) {
-              pinBoxes[idx + 1].focus();
-            } else {
-              // Last box filled, auto submit
+      function handleDigitInput(digit) {
+        hideError();
+        for (let i = 0; i < totalDigits; i++) {
+          if (!pinBoxes[i].value) {
+            pinBoxes[i].value = digit;
+            pinBoxes[i].classList.add('filled');
+            updateActiveBox();
+            updateFullPinInput();
+            if (i === totalDigits - 1) {
               submitPin();
             }
-          } else {
-            box.classList.remove('filled');
+            return;
           }
-          updateFullPinInput();
-        });
+        }
+      }
 
-        box.addEventListener('keydown', (e) => {
-          if (e.key === 'Backspace' && !box.value && idx > 0) {
-            pinBoxes[idx - 1].focus();
-          } else if (e.key === 'ArrowLeft' && idx > 0) {
-            pinBoxes[idx - 1].focus();
-          } else if (e.key === 'ArrowRight' && idx < totalDigits - 1) {
-            pinBoxes[idx + 1].focus();
+      function handleBackspace() {
+        hideError();
+        for (let i = totalDigits - 1; i >= 0; i--) {
+          if (pinBoxes[i].value) {
+            pinBoxes[i].value = '';
+            pinBoxes[i].classList.remove('filled');
+            updateActiveBox();
+            updateFullPinInput();
+            return;
           }
-        });
+        }
+        updateActiveBox();
+        updateFullPinInput();
+      }
 
-        box.addEventListener('paste', (e) => {
+      function handleClear() {
+        hideError();
+        pinBoxes.forEach(box => {
+          box.value = '';
+          box.classList.remove('filled');
+        });
+        updateActiveBox();
+        updateFullPinInput();
+      }
+
+      // Allow clicking on a pin box to clear from that position without triggering mobile keyboard
+      pinBoxes.forEach((box, idx) => {
+        box.addEventListener('click', (e) => {
           e.preventDefault();
-          const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
-          if (!pastedData) return;
-
-          for (let i = 0; i < totalDigits; i++) {
-            if (i < pastedData.length) {
-              pinBoxes[i].value = pastedData[i];
-              pinBoxes[i].classList.add('filled');
-            } else {
-              pinBoxes[i].value = '';
-              pinBoxes[i].classList.remove('filled');
-            }
+          for (let i = idx; i < totalDigits; i++) {
+            pinBoxes[i].value = '';
+            pinBoxes[i].classList.remove('filled');
           }
-
+          updateActiveBox();
           updateFullPinInput();
+        });
 
-          if (pastedData.length >= totalDigits) {
-            pinBoxes[totalDigits - 1].focus();
-            submitPin();
-          } else {
-            pinBoxes[Math.min(pastedData.length, totalDigits - 1)].focus();
-          }
+        // Prevent touch from focusing or triggering software keyboard
+        box.addEventListener('focus', () => {
+          box.blur();
         });
       });
 
       // Keypad button click
       keypadBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
           const digit = btn.getAttribute('data-key');
-          for (let i = 0; i < totalDigits; i++) {
-            if (!pinBoxes[i].value) {
-              pinBoxes[i].value = digit;
-              pinBoxes[i].classList.add('filled');
-              if (i < totalDigits - 1) {
-                pinBoxes[i + 1].focus();
-              } else {
-                submitPin();
-              }
-              break;
-            }
+          if (digit !== null) {
+            handleDigitInput(digit);
           }
-          updateFullPinInput();
         });
       });
 
       // Backspace button click
       if (btnBackspace) {
-        btnBackspace.addEventListener('click', () => {
-          for (let i = totalDigits - 1; i >= 0; i--) {
-            if (pinBoxes[i].value) {
-              pinBoxes[i].value = '';
-              pinBoxes[i].classList.remove('filled');
-              pinBoxes[i].focus();
-              break;
-            }
-          }
-          updateFullPinInput();
+        btnBackspace.addEventListener('click', (e) => {
+          e.preventDefault();
+          handleBackspace();
         });
       }
 
       // Clear button click
       if (btnClear) {
-        btnClear.addEventListener('click', () => {
-          pinBoxes.forEach(box => {
-            box.value = '';
-            box.classList.remove('filled');
-          });
-          pinBoxes[0].focus();
-          updateFullPinInput();
-          hideError();
+        btnClear.addEventListener('click', (e) => {
+          e.preventDefault();
+          handleClear();
         });
       }
+
+      // Physical keyboard support for desktop users
+      document.addEventListener('keydown', (e) => {
+        if (e.target && e.target.tagName === 'INPUT' && !e.target.classList.contains('pin-box')) {
+          return;
+        }
+
+        if (e.key >= '0' && e.key <= '9') {
+          e.preventDefault();
+          handleDigitInput(e.key);
+        } else if (e.key === 'Backspace') {
+          e.preventDefault();
+          handleBackspace();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          handleClear();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          submitPin();
+        }
+      });
+
+      // Paste support
+      document.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        if (!pastedData) return;
+
+        for (let i = 0; i < totalDigits; i++) {
+          if (i < pastedData.length) {
+            pinBoxes[i].value = pastedData[i];
+            pinBoxes[i].classList.add('filled');
+          } else {
+            pinBoxes[i].value = '';
+            pinBoxes[i].classList.remove('filled');
+          }
+        }
+
+        updateActiveBox();
+        const pin = updateFullPinInput();
+
+        if (pin.length >= totalDigits) {
+          submitPin();
+        }
+      });
 
       async function submitPin() {
         const pin = updateFullPinInput();
@@ -722,11 +786,7 @@
           } else {
             sessionStorage.removeItem('pin_tab_session');
             showError(data.error || 'Incorrect PIN!');
-            pinBoxes.forEach(b => {
-              b.value = '';
-              b.classList.remove('filled');
-            });
-            pinBoxes[0].focus();
+            handleClear();
           }
         } catch (err) {
           sessionStorage.setItem('pin_tab_session', 'verified');
