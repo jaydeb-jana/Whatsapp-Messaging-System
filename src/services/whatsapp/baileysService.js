@@ -240,6 +240,10 @@ class SingleAccountSession {
 
           logger.warn(`[${this.label}] Connection closed. StatusCode: ${statusCode}`);
 
+          if (statusCode === 515) {
+            logger.info(`[${this.label}] Connection restart requested by WhatsApp (StatusCode 515). Finalizing authentication handshake...`);
+          }
+
           if (statusCode === DisconnectReason.loggedOut || this.isExplicitDisconnect) {
             this.status = 'disconnected';
             this.accountInfo = null;

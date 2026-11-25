@@ -80,21 +80,55 @@ exports.startPairingApi = (req, res) => {
 
 exports.requestPairingCodeApi = async (req, res) => {
   try {
-    const { sessionId, phoneNumber } = req.body;
+    let { sessionId, phoneNumber, countryCode } = req.body;
     if (!phoneNumber) {
       return res.status(400).json({
         success: false,
-        error: 'Please enter a valid phone number with country code.'
+        error: 'Please enter your WhatsApp phone number.'
       });
     }
+
+    let cleanPhone = String(phoneNumber).replace(/\D/g, '');
+    let cleanCountry = countryCode ? String(countryCode).replace(/\D/g, '') : '';
+
+    if (cleanPhone.startsWith('00')) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+
+    // Smart country code resolution
+    if (cleanCountry && cleanCountry !== 'custom') {
+      if (!cleanPhone.startsWith(cleanCountry)) {
+        if (cleanCountry === '880' && cleanPhone.startsWith('0')) {
+          cleanPhone = cleanPhone.substring(1);
+        }
+        cleanPhone = cleanCountry + cleanPhone;
+      }
+    } else {
+      // Auto-detect common South Asian numbers missing country prefix
+      if (cleanPhone.length === 10 && /^[6-9]/.test(cleanPhone)) {
+        cleanPhone = '91' + cleanPhone;
+        logger.info(`Auto-detected Indian mobile number: formatted to +${cleanPhone}`);
+      } else if (cleanPhone.length === 11 && cleanPhone.startsWith('01')) {
+        cleanPhone = '880' + cleanPhone.substring(1);
+        logger.info(`Auto-detected Bangladesh mobile number: formatted to +${cleanPhone}`);
+      }
+    }
+
+    if (cleanPhone.length < 8 || cleanPhone.length > 15) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid phone number length (${cleanPhone.length} digits). Please enter a valid international mobile number.`
+      });
+    }
+
     const targetSessionId = sessionId || 'account_1';
-    const result = await baileysService.requestPairingCode(targetSessionId, phoneNumber);
+    const result = await baileysService.requestPairingCode(targetSessionId, cleanPhone);
     return res.json(result);
   } catch (err) {
     logger.error('Error requesting pairing code:', err);
     return res.status(500).json({
       success: false,
-      error: err.message || 'Failed to generate pairing code'
+      error: err.message || 'Failed to generate pairing code from WhatsApp'
     });
   }
 };

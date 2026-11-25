@@ -166,7 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Close Modal (Cancels pairing if not completed)
   window.closePairingModal = async () => {
     if (modalCountdownInterval) clearInterval(modalCountdownInterval);
+    if (pairingCountdownInterval) clearInterval(pairingCountdownInterval);
     if (modalOverlay) modalOverlay.style.display = 'none';
+
+    // Reset phone view states
+    const codeResult = document.getElementById('pairing-code-result');
+    if (codeResult) codeResult.style.display = 'none';
+    const phoneInput = document.getElementById('pairing-phone-input');
+    if (phoneInput) phoneInput.value = '';
 
     // If closed before pairing completed & was a new account, cancel socket
     if (!pairingCompleted && pendingPairingSessionId && !isReconnectMode) {
@@ -228,22 +235,119 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Live Phone Preview & Country auto-detector
+  window.updatePhonePreview = () => {
+    const countrySelect = document.getElementById('pairing-country-select');
+    const phoneInput = document.getElementById('pairing-phone-input');
+    const previewNum = document.getElementById('preview-full-number');
+    const previewCountry = document.getElementById('preview-country-name');
+
+    if (!countrySelect || !phoneInput || !previewNum) return;
+
+    let countryCode = countrySelect.value;
+    let rawVal = phoneInput.value.trim();
+    let digits = rawVal.replace(/\D/g, '');
+
+    // Auto-detect if user pasted a number with country code
+    if (rawVal.startsWith('+') || rawVal.startsWith('00') || (rawVal.startsWith('91') && digits.length >= 12) || (rawVal.startsWith('880') && digits.length >= 13)) {
+      if (digits.startsWith('91') && digits.length >= 12) {
+        countrySelect.value = '91';
+        countryCode = '91';
+        digits = digits.substring(2);
+        phoneInput.value = digits;
+      } else if (digits.startsWith('880') && digits.length >= 13) {
+        countrySelect.value = '880';
+        countryCode = '880';
+        digits = digits.substring(3);
+        phoneInput.value = digits;
+      } else if (digits.startsWith('92') && digits.length >= 12) {
+        countrySelect.value = '92';
+        countryCode = '92';
+        digits = digits.substring(2);
+        phoneInput.value = digits;
+      } else if (digits.startsWith('971') && digits.length >= 11) {
+        countrySelect.value = '971';
+        countryCode = '971';
+        digits = digits.substring(3);
+        phoneInput.value = digits;
+      } else if (digits.startsWith('1') && digits.length === 11) {
+        countrySelect.value = '1';
+        countryCode = '1';
+        digits = digits.substring(1);
+        phoneInput.value = digits;
+      }
+    }
+
+    const countryLabels = {
+      '91': 'India 🇮🇳',
+      '880': 'Bangladesh 🇧🇩',
+      '92': 'Pakistan 🇵🇰',
+      '971': 'UAE 🇦🇪',
+      '966': 'Saudi Arabia 🇸🇦',
+      '1': 'US / Canada 🇺🇸',
+      '44': 'United Kingdom 🇬🇧',
+      'custom': 'Custom 🌐'
+    };
+
+    if (previewCountry) {
+      previewCountry.textContent = countryLabels[countryCode] || 'International';
+    }
+
+    if (!digits) {
+      previewNum.textContent = countryCode === 'custom' ? 'Enter full international number' : `+${countryCode} (Enter number)`;
+      return;
+    }
+
+    if (countryCode === 'custom') {
+      previewNum.textContent = `+${digits}`;
+    } else {
+      let localDigits = digits;
+      if (countryCode === '880' && localDigits.startsWith('0')) {
+        localDigits = localDigits.substring(1);
+      }
+      previewNum.textContent = `+${countryCode} ${localDigits}`;
+    }
+  };
+
+  let pairingCountdownInterval = null;
+
   // Submit Phone Number for Pairing Code
   window.requestPairingCodeSubmit = async () => {
+    const countrySelect = document.getElementById('pairing-country-select');
     const phoneInput = document.getElementById('pairing-phone-input');
     const btnText = document.getElementById('btn-pairing-text');
     const btnSpinner = document.getElementById('btn-pairing-spinner');
     const btnSubmit = document.getElementById('btn-get-pairing-code');
     const codeResult = document.getElementById('pairing-code-result');
     const codeDisplay = document.getElementById('pairing-code-display');
+    const instrCode = document.getElementById('instruction-code');
+    const instrPhone = document.getElementById('instruction-phone-num');
+    const countdownEl = document.getElementById('pairing-countdown');
 
     if (!phoneInput) return;
-    const rawVal = phoneInput.value.trim();
-    const cleanNumber = rawVal.replace(/\D/g, '');
+    const countryCode = countrySelect ? countrySelect.value : '91';
+    let rawVal = phoneInput.value.trim();
+    let digits = rawVal.replace(/\D/g, '');
 
-    if (!cleanNumber || cleanNumber.length < 8 || cleanNumber.length > 15) {
+    if (!digits) {
+      if (window.showToast) window.showToast('Please enter your WhatsApp mobile number.', 'warn');
+      phoneInput.focus();
+      return;
+    }
+
+    let fullPhone = digits;
+    if (countryCode !== 'custom') {
+      if (countryCode === '880' && fullPhone.startsWith('0')) {
+        fullPhone = fullPhone.substring(1);
+      }
+      if (!fullPhone.startsWith(countryCode)) {
+        fullPhone = countryCode + fullPhone;
+      }
+    }
+
+    if (fullPhone.length < 8 || fullPhone.length > 15) {
       if (window.showToast) {
-        window.showToast('Please enter a valid phone number with country code (e.g. +8801712345678).', 'warn');
+        window.showToast(`Invalid phone number length (${fullPhone.length} digits). Please enter a valid mobile number.`, 'warn');
       }
       phoneInput.focus();
       return;
@@ -259,7 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId: pendingPairingSessionId || window.activeSessionId,
-          phoneNumber: cleanNumber
+          phoneNumber: fullPhone,
+          countryCode
         })
       });
 
@@ -270,15 +375,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (codeDisplay) {
-        codeDisplay.textContent = data.formattedCode || data.code;
-      }
-      if (codeResult) {
-        codeResult.style.display = 'block';
-      }
+      const displayCode = data.formattedCode || data.code;
+      if (codeDisplay) codeDisplay.textContent = displayCode;
+      if (instrCode) instrCode.textContent = displayCode;
+      if (instrPhone) instrPhone.textContent = `+${fullPhone}`;
+      if (codeResult) codeResult.style.display = 'block';
+
+      // Start 120-second countdown timer
+      if (pairingCountdownInterval) clearInterval(pairingCountdownInterval);
+      let secondsLeft = 120;
+      if (countdownEl) countdownEl.textContent = secondsLeft;
+      pairingCountdownInterval = setInterval(() => {
+        secondsLeft--;
+        if (countdownEl) countdownEl.textContent = secondsLeft;
+        if (secondsLeft <= 0) {
+          clearInterval(pairingCountdownInterval);
+          if (countdownEl) countdownEl.textContent = 'Expired - Click New Code';
+        }
+      }, 1000);
 
       if (window.showToast) {
-        window.showToast(`Pairing code generated for +${cleanNumber}! Enter it on WhatsApp.`, 'success');
+        window.showToast(`Pairing code ${displayCode} generated for +${fullPhone}! Enter it on WhatsApp.`, 'success');
       }
     } catch (err) {
       if (window.showToast) window.showToast(`Network error: ${err.message}`, 'error');
@@ -519,8 +636,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.sessionId === pendingPairingSessionId) {
         pairingCompleted = true;
         if (modalCountdownInterval) clearInterval(modalCountdownInterval);
+        if (pairingCountdownInterval) clearInterval(pairingCountdownInterval);
 
         if (modalQrView) modalQrView.style.display = 'none';
+        const viewPhone = document.getElementById('modal-phone-view');
+        if (viewPhone) viewPhone.style.display = 'none';
         if (modalSuccessPhone) modalSuccessPhone.textContent = data.accountInfo ? (data.accountInfo.formattedPhone || data.accountInfo.name) : 'WhatsApp Linked';
         if (modalSuccessView) modalSuccessView.style.display = 'block';
 

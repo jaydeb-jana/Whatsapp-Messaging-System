@@ -1037,6 +1037,27 @@
   box-shadow: 0 0 35px rgba(16, 185, 129, 0.25);
 }
 
+.phone-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 480px) {
+  .phone-input-row {
+    flex-wrap: wrap;
+  }
+  #pairing-country-select {
+    width: 100% !important;
+  }
+  #pairing-phone-input {
+    width: 100% !important;
+  }
+  #btn-get-pairing-code {
+    width: 100% !important;
+  }
+}
+
 .modal-steps-bar {
   display: flex;
   align-items: center;
