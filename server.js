@@ -36,8 +36,8 @@ async function bootstrap() {
       logger.info(`   Network: http://192.168.0.182:${PORT}`);
       logger.info(`Dashboard: http://localhost:${PORT}/`);
       logger.info(`Connect WhatsApp: http://localhost:${PORT}/whatsapp/connect`);
-      logger.info(`Send Message: http://localhost:${PORT}/messages/send`);
       logger.info(`Message History: http://localhost:${PORT}/messages/history`);
+      logger.info(`API Send Message: POST http://localhost:${PORT}/api/messages/send`);
     });
 
     // 5. Auto-restore WhatsApp accounts (up to 5 accounts)

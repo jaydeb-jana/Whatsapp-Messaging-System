@@ -2,7 +2,8 @@ const {
   makeWASocket,
   useMultiFileAuthState,
   DisconnectReason,
-  fetchLatestBaileysVersion
+  fetchLatestBaileysVersion,
+  Browsers
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -25,6 +26,7 @@ class SingleAccountSession {
     this.qrDataUrl = null;
     this.qrTimestamp = null;
     this.qrExpirySeconds = 45;
+    this.pairingCode = null;
     this.accountInfo = null;
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 10;
@@ -33,7 +35,7 @@ class SingleAccountSession {
     this.reconnectTimeout = null;
     this.silentLogger = pino({ level: 'silent' });
     this.broadcast = ioCallback;
-    this.isAdded = slotNumber === 1 || hasExistingSession(this.sessionId);
+    this.isAdded = hasExistingSession(this.sessionId);
   }
 
   getStatus() {
@@ -50,6 +52,7 @@ class SingleAccountSession {
       qrDataUrl: this.status === 'connected' ? null : this.qrDataUrl,
       qrTimestamp: this.qrTimestamp,
       qrExpirySeconds: this.qrExpirySeconds,
+      pairingCode: this.pairingCode,
       reconnectAttempts: this.reconnectAttempts,
       hasSavedSession: hasExistingSession(this.sessionId)
     };
@@ -139,7 +142,7 @@ class SingleAccountSession {
         auth: state,
         logger: this.silentLogger,
         printQRInTerminal: false,
-        browser: [`WhatsFlow Pro #${this.slot}`, 'Chrome', '1.0.0'],
+        browser: Browsers.ubuntu('Chrome'),
         connectTimeoutMs: 60000,
         keepAliveIntervalMs: 25000,
         emitOwnEvents: false,
@@ -181,6 +184,7 @@ class SingleAccountSession {
           this.status = 'connected';
           this.qrCode = null;
           this.qrDataUrl = null;
+          this.pairingCode = null;
           this.reconnectAttempts = 0;
           this.isReconnecting = false;
 
@@ -343,6 +347,7 @@ class SingleAccountSession {
       this.accountInfo = null;
       this.qrCode = null;
       this.qrDataUrl = null;
+      this.pairingCode = null;
       this.reconnectAttempts = 0;
 
       await this.updateDatabase('disconnected', { disconnectedAt: new Date() });
@@ -365,6 +370,65 @@ class SingleAccountSession {
     } catch (err) {
       logger.error(`[${this.label}] Disconnect error:`, err);
       return { success: false, error: err.message };
+    }
+  }
+
+  async requestPairingCode(phoneNumber) {
+    if (!phoneNumber) {
+      throw new Error('Phone number is required');
+    }
+    const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
+    if (cleanNumber.length < 8 || cleanNumber.length > 15) {
+      throw new Error('Please enter a valid phone number with country code (8-15 digits, e.g. 8801712345678)');
+    }
+
+    if (this.isConnected()) {
+      throw new Error(`${this.label} is already connected.`);
+    }
+
+    // Ensure socket is initialized
+    if (!this.socket || this.status === 'disconnected') {
+      await this.initSocket();
+    }
+
+    // Wait until socket's WS is open and ready to accept pairing request
+    const maxWaitMs = 15000;
+    const start = Date.now();
+    while ((!this.socket || !this.socket.ws || !this.socket.ws.isOpen) && (Date.now() - start < maxWaitMs)) {
+      await new Promise(r => setTimeout(r, 250));
+    }
+
+    if (!this.socket || !this.socket.ws || !this.socket.ws.isOpen) {
+      throw new Error('WhatsApp server connection could not be established in time. Please try again.');
+    }
+
+    try {
+      const code = await this.socket.requestPairingCode(cleanNumber);
+      const formattedCode = code ? (code.match(/.{1,4}/g)?.join('-') || code) : code;
+      this.pairingCode = formattedCode;
+
+      logger.info(`[${this.label}] Pairing code generated for +${cleanNumber}: ${formattedCode}`);
+
+      this.broadcast('whatsapp:pairing_code', {
+        slot: this.slot,
+        sessionId: this.sessionId,
+        label: this.label,
+        code,
+        formattedCode,
+        phoneNumber: cleanNumber
+      });
+
+      return {
+        success: true,
+        code,
+        formattedCode,
+        phoneNumber: cleanNumber,
+        slot: this.slot,
+        sessionId: this.sessionId
+      };
+    } catch (err) {
+      logger.error(`[${this.label}] requestPairingCode error:`, err);
+      throw new Error(err.message || 'Failed to request pairing code from WhatsApp');
     }
   }
 }
@@ -562,6 +626,15 @@ class MultiAccountBaileysService {
   async disconnect(sessionId, logout = true) {
     const targetSession = this.getAccount(sessionId);
     return await targetSession.disconnect(logout);
+  }
+
+  async requestPairingCode(sessionId, phoneNumber) {
+    const id = this.normalizeSessionId(sessionId);
+    const session = this.accounts.get(id);
+    if (!session) {
+      throw new Error(`Account slot [${id}] not found`);
+    }
+    return await session.requestPairingCode(phoneNumber);
   }
 
   async autoRestoreAll() {

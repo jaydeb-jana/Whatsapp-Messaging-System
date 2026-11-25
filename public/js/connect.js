@@ -97,8 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Reset Modal Views
       if (modalTitle) modalTitle.textContent = 'Link New WhatsApp Account';
-      if (modalSubtitle) modalSubtitle.textContent = `Scan QR code to pair your device (Channel ${data.slot} of ${maxAccounts})`;
+      if (modalSubtitle) modalSubtitle.textContent = `Choose QR code or Phone Number to pair your device (Channel ${data.slot} of ${maxAccounts})`;
       if (modalSlotNum) modalSlotNum.textContent = data.slot;
+
+      // Reset to default QR tab
+      window.switchPairingMethod('qr');
+      const phoneInput = document.getElementById('pairing-phone-input');
+      const codeResult = document.getElementById('pairing-code-result');
+      if (phoneInput) phoneInput.value = '';
+      if (codeResult) codeResult.style.display = 'none';
 
       if (modalSuccessView) modalSuccessView.style.display = 'none';
       if (modalQrView) modalQrView.style.display = 'block';
@@ -125,8 +132,15 @@ document.addEventListener('DOMContentLoaded', () => {
       pairingCompleted = false;
 
       if (modalTitle) modalTitle.textContent = `Reconnect Account #${slot}`;
-      if (modalSubtitle) modalSubtitle.textContent = `Scan QR code with your mobile app to restore this session`;
+      if (modalSubtitle) modalSubtitle.textContent = `Scan QR code or use Phone Number to restore this session`;
       if (modalSlotNum) modalSlotNum.textContent = slot;
+
+      // Reset to default QR tab
+      window.switchPairingMethod('qr');
+      const phoneInput = document.getElementById('pairing-phone-input');
+      const codeResult = document.getElementById('pairing-code-result');
+      if (phoneInput) phoneInput.value = '';
+      if (codeResult) codeResult.style.display = 'none';
 
       if (modalSuccessView) modalSuccessView.style.display = 'none';
       if (modalQrView) modalQrView.style.display = 'block';
@@ -190,6 +204,107 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       setTimeout(() => { if (btnModalRefresh) btnModalRefresh.disabled = false; }, 3000);
     }
+  };
+
+  // Switch between QR code and Phone Number methods
+  window.switchPairingMethod = (method) => {
+    const tabQr = document.getElementById('btn-tab-qr');
+    const tabPhone = document.getElementById('btn-tab-phone');
+    const viewQr = document.getElementById('modal-qr-view');
+    const viewPhone = document.getElementById('modal-phone-view');
+
+    if (method === 'phone') {
+      if (tabQr) tabQr.classList.remove('active');
+      if (tabPhone) tabPhone.classList.add('active');
+      if (viewQr) viewQr.style.display = 'none';
+      if (viewPhone) viewPhone.style.display = 'block';
+      const phoneInput = document.getElementById('pairing-phone-input');
+      if (phoneInput) phoneInput.focus();
+    } else {
+      if (tabPhone) tabPhone.classList.remove('active');
+      if (tabQr) tabQr.classList.add('active');
+      if (viewPhone) viewPhone.style.display = 'none';
+      if (viewQr) viewQr.style.display = 'block';
+    }
+  };
+
+  // Submit Phone Number for Pairing Code
+  window.requestPairingCodeSubmit = async () => {
+    const phoneInput = document.getElementById('pairing-phone-input');
+    const btnText = document.getElementById('btn-pairing-text');
+    const btnSpinner = document.getElementById('btn-pairing-spinner');
+    const btnSubmit = document.getElementById('btn-get-pairing-code');
+    const codeResult = document.getElementById('pairing-code-result');
+    const codeDisplay = document.getElementById('pairing-code-display');
+
+    if (!phoneInput) return;
+    const rawVal = phoneInput.value.trim();
+    const cleanNumber = rawVal.replace(/\D/g, '');
+
+    if (!cleanNumber || cleanNumber.length < 8 || cleanNumber.length > 15) {
+      if (window.showToast) {
+        window.showToast('Please enter a valid phone number with country code (e.g. +8801712345678).', 'warn');
+      }
+      phoneInput.focus();
+      return;
+    }
+
+    try {
+      if (btnText) btnText.style.display = 'none';
+      if (btnSpinner) btnSpinner.style.display = 'inline-block';
+      if (btnSubmit) btnSubmit.disabled = true;
+
+      const res = await fetch('/api/whatsapp/pairing-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: pendingPairingSessionId || window.activeSessionId,
+          phoneNumber: cleanNumber
+        })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        if (window.showToast) window.showToast(data.error || 'Failed to generate pairing code.', 'error');
+        return;
+      }
+
+      if (codeDisplay) {
+        codeDisplay.textContent = data.formattedCode || data.code;
+      }
+      if (codeResult) {
+        codeResult.style.display = 'block';
+      }
+
+      if (window.showToast) {
+        window.showToast(`Pairing code generated for +${cleanNumber}! Enter it on WhatsApp.`, 'success');
+      }
+    } catch (err) {
+      if (window.showToast) window.showToast(`Network error: ${err.message}`, 'error');
+    } finally {
+      if (btnText) btnText.style.display = 'inline';
+      if (btnSpinner) btnSpinner.style.display = 'none';
+      if (btnSubmit) btnSubmit.disabled = false;
+    }
+  };
+
+  // Copy pairing code to clipboard
+  window.copyPairingCode = () => {
+    const codeDisplay = document.getElementById('pairing-code-display');
+    const copyBtnText = document.getElementById('copy-btn-text');
+    if (!codeDisplay) return;
+
+    const code = codeDisplay.textContent.trim().replace(/\s+/g, '');
+    navigator.clipboard.writeText(code).then(() => {
+      if (copyBtnText) copyBtnText.textContent = 'Copied!';
+      if (window.showToast) window.showToast('Pairing code copied to clipboard!', 'success');
+      setTimeout(() => {
+        if (copyBtnText) copyBtnText.textContent = 'Copy Code';
+      }, 2000);
+    }).catch(() => {
+      if (window.showToast) window.showToast('Failed to copy to clipboard', 'warn');
+    });
   };
 
   // Render workspace view for active slot
@@ -386,6 +501,16 @@ document.addEventListener('DOMContentLoaded', () => {
         displayModalQR(data.qrDataUrl, data.qrExpirySeconds || 45);
       }
       updateSlotCardInGrid(data);
+    });
+
+    // Live Pairing Code reception
+    window.appSocket.on('whatsapp:pairing_code', (data) => {
+      if (data.sessionId === pendingPairingSessionId || data.sessionId === window.activeSessionId) {
+        const codeDisplay = document.getElementById('pairing-code-display');
+        const codeResult = document.getElementById('pairing-code-result');
+        if (codeDisplay) codeDisplay.textContent = data.formattedCode || data.code;
+        if (codeResult) codeResult.style.display = 'block';
+      }
     });
 
     // Connection Successful Event

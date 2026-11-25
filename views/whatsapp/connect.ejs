@@ -123,8 +123,8 @@
       <div class="card" style="padding: 3rem 1.5rem; text-align: center;">
         <div style="font-size: 2.75rem; margin-bottom: 0.85rem;">📱</div>
         <h3 style="font-size: 1.35rem; font-weight: 700; color: #fff;">No WhatsApp Accounts Connected</h3>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 420px; margin: 0.5rem auto 1.5rem; line-height: 1.5;">
-          You currently have no connected accounts. Click the button below to link your WhatsApp account by scanning a live QR code.
+        <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 440px; margin: 0.5rem auto 1.5rem; line-height: 1.5;">
+          You currently have no connected accounts. Click the button below to link your WhatsApp account by scanning a live <strong>QR Code</strong> or with your <strong>Mobile Phone Number</strong>.
         </p>
         <button class="btn btn-primary" onclick="openPairingModal()">
           <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,12 +221,6 @@
         </div>
 
         <div style="display: flex; gap: 0.75rem; width: 100%; justify-content: center; flex-wrap: wrap;">
-          <a href="/messages/send" class="btn btn-primary">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-            Compose Message
-          </a>
           <button class="btn btn-secondary" id="btn-disconnect">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -264,12 +258,12 @@
         </li>
         <li>
           <div>
-            Scan the QR code in the pairing popup using your WhatsApp mobile app.
+            Choose to pair via <strong>Scan QR Code</strong> or <strong>Mobile Phone Number</strong> (8-digit pairing code).
           </div>
         </li>
         <li>
           <div>
-            Only once pairing is <strong>100% successful</strong> will the account be saved!
+            Only once pairing is <strong>100% successful</strong> will the account be saved to your dashboard!
           </div>
         </li>
         <li>
@@ -319,22 +313,38 @@
         </svg>
       </div>
       <div>
-        <h3 class="qr-modal-title" id="modal-title">Link New WhatsApp Account</h3>
-        <p class="qr-modal-subtitle" id="modal-subtitle">Scan QR code to pair your device (Channel <span id="modal-slot-num">2</span> of 5)</p>
+        <h3 class="qr-modal-title" id="modal-title">Link WhatsApp Account</h3>
+        <p class="qr-modal-subtitle" id="modal-subtitle">Choose QR code or Phone Number to pair your device (Channel <span id="modal-slot-num">1</span> of 5)</p>
       </div>
     </div>
 
-    <!-- Quick Steps Bar -->
-    <div class="modal-steps-bar">
-      <div class="modal-step"><span class="step-num">1</span> Open WhatsApp</div>
-      <div class="modal-step-arrow">&rarr;</div>
-      <div class="modal-step"><span class="step-num">2</span> Linked Devices</div>
-      <div class="modal-step-arrow">&rarr;</div>
-      <div class="modal-step"><span class="step-num">3</span> Scan QR</div>
+    <!-- Pairing Method Selector Tabs -->
+    <div class="pairing-method-tabs">
+      <button type="button" class="method-tab-btn active" id="btn-tab-qr" onclick="switchPairingMethod('qr')">
+        <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+        </svg>
+        <span>Scan QR Code</span>
+      </button>
+      <button type="button" class="method-tab-btn" id="btn-tab-phone" onclick="switchPairingMethod('phone')">
+        <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span>Pair with Phone Number</span>
+      </button>
     </div>
 
-    <!-- QR View State -->
+    <!-- METHOD 1: QR View State -->
     <div id="modal-qr-view">
+      <!-- Quick Steps Bar for QR -->
+      <div class="modal-steps-bar">
+        <div class="modal-step"><span class="step-num">1</span> Open WhatsApp</div>
+        <div class="modal-step-arrow">&rarr;</div>
+        <div class="modal-step"><span class="step-num">2</span> Linked Devices</div>
+        <div class="modal-step-arrow">&rarr;</div>
+        <div class="modal-step"><span class="step-num">3</span> Scan QR</div>
+      </div>
+
       <div class="qr-frame modal-qr-frame">
         <div class="qr-scanner-line"></div>
         <img id="modal-qr-img" src="" alt="WhatsApp QR Code" style="display: none;">
@@ -358,6 +368,79 @@
           </svg>
           Refresh QR
         </button>
+      </div>
+    </div>
+
+    <!-- METHOD 2: Phone Number Pairing Code View State -->
+    <div id="modal-phone-view" style="display: none;">
+      <!-- Steps Bar for Phone -->
+      <div class="modal-steps-bar">
+        <div class="modal-step"><span class="step-num">1</span> Linked Devices</div>
+        <div class="modal-step-arrow">&rarr;</div>
+        <div class="modal-step"><span class="step-num">2</span> Link with Phone</div>
+        <div class="modal-step-arrow">&rarr;</div>
+        <div class="modal-step"><span class="step-num">3</span> Enter Code</div>
+      </div>
+
+      <!-- Phone Number Input Form -->
+      <div id="phone-input-section" style="text-align: left; margin: 1rem 0;">
+        <label for="pairing-phone-input" style="display: block; font-size: 0.85rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem;">
+          WhatsApp Phone Number (with Country Code)
+        </label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input 
+            type="tel" 
+            id="pairing-phone-input" 
+            class="form-control" 
+            placeholder="e.g. +8801712345678 or 12025550199" 
+            style="flex: 1; font-size: 0.95rem; font-family: monospace; letter-spacing: 0.5px;"
+          />
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            id="btn-get-pairing-code" 
+            onclick="requestPairingCodeSubmit()"
+            style="white-space: nowrap; padding: 0.65rem 1.15rem;"
+          >
+            <span id="btn-pairing-text">⚡ Get Code</span>
+            <div id="btn-pairing-spinner" class="qr-spinner" style="display: none; width: 16px; height: 16px; margin: 0 auto; border-width: 2px;"></div>
+          </button>
+        </div>
+        <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.4rem;">
+          Enter your full mobile number including international country code (no dashes or spaces required).
+        </p>
+      </div>
+
+      <!-- Pairing Code Result Display -->
+      <div id="pairing-code-result" style="display: none; margin-top: 1.25rem;">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-align: center; letter-spacing: 1px; margin-bottom: 0.5rem;">
+          YOUR 8-DIGIT PAIRING CODE
+        </div>
+
+        <div class="pairing-code-badge" id="pairing-code-display">
+          ----&nbsp;----
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 0.85rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-pairing-code" onclick="copyPairingCode()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span id="copy-btn-text">Copy Code</span>
+          </button>
+          <span class="qr-timer-pill" style="font-size: 0.78rem;">
+            🟢 Waiting for mobile entry...
+          </span>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 0.75rem 0.95rem; margin-top: 1rem; font-size: 0.78rem; color: #94a3b8; text-align: left; line-height: 1.55;">
+          <strong style="color: #e2e8f0;">How to enter on WhatsApp:</strong>
+          <ol style="margin: 0.25rem 0 0 1.25rem; padding: 0;">
+            <li>Tap WhatsApp notification or open WhatsApp &gt; <strong>Linked Devices</strong>.</li>
+            <li>Tap <strong>Link a Device</strong> &gt; <strong>Link with phone number instead</strong>.</li>
+            <li>Enter this 8-digit pairing code on your screen.</li>
+          </ol>
+        </div>
       </div>
     </div>
 

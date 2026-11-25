@@ -137,12 +137,10 @@ async function runTests() {
   assert(connectRes.body.includes('Scan QR Code') || connectRes.body.includes('WhatsApp Multi-Account Manager'));
   console.log('  ✅ GET /whatsapp/connect rendered 200 OK');
 
-  // Test GET /messages/send
+  // Test GET /messages/send (Redirects to /whatsapp/connect since web composer is removed)
   const sendRes = await fetchEndpoint('/messages/send');
-  assert.strictEqual(sendRes.status, 200);
-  assert(sendRes.body.includes('Send WhatsApp Message'));
-  assert(sendRes.body.includes('Quick Templates'));
-  console.log('  ✅ GET /messages/send rendered 200 OK with composer controls');
+  assert.strictEqual(sendRes.status, 302);
+  console.log('  ✅ GET /messages/send cleanly redirected 302 to /whatsapp/connect');
 
   // Test GET /messages/history
   const historyRes = await fetchEndpoint('/messages/history');

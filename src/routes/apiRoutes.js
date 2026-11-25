@@ -16,6 +16,7 @@ router.post('/whatsapp/connect', whatsappController.initConnect);
 router.post('/whatsapp/disconnect', whatsappController.disconnect);
 router.post('/whatsapp/reconnect', whatsappController.reconnectApi);
 router.post('/whatsapp/accounts/start-pairing', whatsappController.startPairingApi);
+router.post('/whatsapp/pairing-code', whatsappController.requestPairingCodeApi);
 router.post('/whatsapp/pairing/cancel', whatsappController.cancelPairingApi);
 router.post('/whatsapp/accounts/add', whatsappController.addAccountApi);
 router.post('/whatsapp/accounts/remove', whatsappController.removeAccountApi);

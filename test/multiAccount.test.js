@@ -20,7 +20,7 @@ async function testMultiAccountSystem() {
   const initialAdded = baileysService.getAddedAccounts();
   const pairRes = baileysService.startNewAccountPairing();
   assert.strictEqual(pairRes.success, true);
-  assert(pairRes.slot >= 2);
+  assert(pairRes.slot >= 1);
 
   // Check that slot is NOT marked as added yet!
   const pendingSession = baileysService.getAccount(pairRes.sessionId);
@@ -65,9 +65,28 @@ async function testMultiAccountSystem() {
 
   // Cleanup
   await Message.deleteOne({ messageId: testMsg.messageId });
+
+  // Test 6: Verifying Pairing Code method validation
+  console.log('\n[TEST 6] Verifying Phone Number Pairing Code method validation...');
+  await assert.rejects(
+    async () => {
+      await baileysService.requestPairingCode('account_1', '');
+    },
+    { message: /Phone number is required/ }
+  );
+
+  await assert.rejects(
+    async () => {
+      await baileysService.requestPairingCode('account_1', '123');
+    },
+    { message: /valid phone number/ }
+  );
+  console.log('  ✅ Phone Number Pairing Code validation confirmed');
+
   await disconnectDatabase();
 
   console.log('\n--- 🎉 ALL DYNAMIC PLUS (+) & CONDITIONAL PERSISTENCE TESTS PASSED! ---\n');
+  process.exit(0);
 }
 
 testMultiAccountSystem().catch(err => {

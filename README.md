@@ -206,19 +206,19 @@ http://localhost:3000
 
 ---
 
-## 💬 Message Dispatching
+## 💬 Message Dispatching (REST API)
 
-Navigate to `/messages/send` to compose messages:
+Dispatch messages programmatically via the REST API endpoint (`POST /api/messages/send`):
 
 1. **Recipient Input:**
-   Enter the recipient's phone number with country code (e.g., `8801712345678` or `+1 202 555 0199`). The validator will automatically display country detection and formatted preview.
+   Pass the recipient's phone number with country code (e.g., `8801712345678` or `+1 202 555 0199`). The validator will automatically detect country and validate E.164 formatting.
 2. **Select Message Type:**
-   - **Text:** Enter plain text, multi-line content, emojis, or click the **Bengali Quick Inserts** buttons for instant sample messages.
-   - **Image:** Drag & drop or select JPG, PNG, or WebP images with an optional caption.
-   - **Video:** Attach MP4 or 3GP videos up to 50MB with an optional caption.
-   - **Document:** Attach PDF, DOCX, XLSX, or ZIP files with a customizable recipient-facing filename.
+   - **Text:** Plain text, multi-line content, emojis, or Unicode/Bengali messages.
+   - **Image:** JPG, PNG, or WebP images with an optional caption.
+   - **Video:** MP4 or 3GP videos up to 50MB with an optional caption.
+   - **Document:** PDF, DOCX, XLSX, or ZIP files with a customizable recipient-facing filename.
 3. **Dispatch:**
-   Click **Send WhatsApp Message**. The button disables to prevent duplicate submissions, and real-time delivery toasts notify you as soon as the message is transmitted.
+   Post to `/api/messages/send` with optional `accountSlot` (`account_1` through `account_5`) to select the sender account. Real-time delivery status is logged to MongoDB and visible in the Message History audit log.
 
 ---
 

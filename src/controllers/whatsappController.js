@@ -78,6 +78,27 @@ exports.startPairingApi = (req, res) => {
   }
 };
 
+exports.requestPairingCodeApi = async (req, res) => {
+  try {
+    const { sessionId, phoneNumber } = req.body;
+    if (!phoneNumber) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please enter a valid phone number with country code.'
+      });
+    }
+    const targetSessionId = sessionId || 'account_1';
+    const result = await baileysService.requestPairingCode(targetSessionId, phoneNumber);
+    return res.json(result);
+  } catch (err) {
+    logger.error('Error requesting pairing code:', err);
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to generate pairing code'
+    });
+  }
+};
+
 exports.cancelPairingApi = async (req, res) => {
   try {
     const sessionId = req.body.sessionId || req.body.slot;

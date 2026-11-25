@@ -30,21 +30,12 @@
       </svg>
       Manage Accounts
     </a>
-    <% if (connectedCount > 0) { %>
-      <a href="/messages/send" class="btn btn-primary">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-        </svg>
-        Compose Message
-      </a>
-    <% } else { %>
-      <a href="/whatsapp/connect" class="btn btn-primary">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-        </svg>
-        Link Account
-      </a>
-    <% } %>
+    <a href="/whatsapp/connect" class="btn btn-primary">
+      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Manage Accounts
+    </a>
   </div>
 </div>
 
@@ -175,7 +166,7 @@
               <td colspan="5" style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
                 <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📬</div>
                 No messaging activity recorded yet.<br>
-                <a href="/messages/send" style="color: var(--text-accent); text-decoration: none; font-weight: 600;">Send your first WhatsApp message &rarr;</a>
+                <a href="/whatsapp/connect" style="color: var(--text-accent); text-decoration: none; font-weight: 600;">Manage your WhatsApp channels &rarr;</a>
               </td>
             </tr>
           <% } %>
@@ -186,19 +177,19 @@
 
   <!-- Right: Quick Actions & System Event Stream -->
   <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-    <!-- Quick Compose Card -->
+    <!-- WhatsApp Channels Quick Card -->
     <div class="card" style="background: linear-gradient(180deg, #162032 0%, var(--bg-card) 100%);">
       <h3 class="card-title" style="margin-bottom: 0.75rem;">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
-        Quick Message
+        WhatsApp Channels
       </h3>
       <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
-        Dispatch text messages, images, videos or documents with Unicode and Bengali language support.
+        Connect and operate up to 5 WhatsApp accounts concurrently with multi-device support.
       </p>
-      <a href="/messages/send" class="btn btn-primary" style="width: 100%;">
-        Open Message Composer &rarr;
+      <a href="/whatsapp/connect" class="btn btn-primary" style="width: 100%;">
+        Manage Accounts &rarr;
       </a>
     </div>
 
