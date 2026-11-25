@@ -48,17 +48,56 @@
   </div>
 
   <div id="toast-container"></div>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
-  <!-- Mobile Sidebar Script -->
+  <!-- Mobile Sidebar Drawer Handler -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const toggle = document.querySelector('.mobile-menu-toggle');
       const sidebar = document.querySelector('.sidebar');
-      if (toggle && sidebar) {
-        toggle.addEventListener('click', () => {
-          sidebar.classList.toggle('open');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const closeBtn = document.getElementById('sidebar-close-btn');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.classList.add('sidebar-open');
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+      }
+
+      if (toggle) {
+        toggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (sidebar && sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
         });
       }
+
+      if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+      if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
+          closeSidebar();
+        }
+      });
+
+      // Close sidebar when clicking any navigation link on mobile
+      document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 900) {
+            closeSidebar();
+          }
+        });
+      });
     });
   </script>
 </body>

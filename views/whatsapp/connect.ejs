@@ -29,7 +29,7 @@
   </div>
 
   <!-- Dynamic Account Slots Grid + Plus (+) Add Card -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem;" id="slots-grid">
+  <div class="slots-grid-container" id="slots-grid">
     <% accounts.forEach(acc => { %>
       <div 
         class="slot-card <%= (selectedSessionId === acc.sessionId) ? 'active' : '' %> <%= acc.status === 'disconnected' ? 'disconnected' : '' %>"

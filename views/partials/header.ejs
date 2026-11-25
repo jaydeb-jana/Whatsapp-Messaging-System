@@ -23,27 +23,27 @@
 
     <!-- Quick Action Button -->
     <% if (typeof statusInfo !== 'undefined' && statusInfo.status === 'connected') { %>
-      <a href="/messages/send" class="btn btn-primary btn-sm">
+      <a href="/messages/send" class="btn btn-primary btn-sm header-action-btn" title="Compose Message">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        <span>Compose</span>
+        <span class="header-btn-label">Compose</span>
       </a>
     <% } else { %>
-      <a href="/whatsapp/connect" class="btn btn-primary btn-sm">
+      <a href="/whatsapp/connect" class="btn btn-primary btn-sm header-action-btn" title="Link WhatsApp">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
         </svg>
-        <span>Link WhatsApp</span>
+        <span class="header-btn-label">Link WhatsApp</span>
       </a>
     <% } %>
 
     <!-- Lock Site Button -->
-    <a href="/auth/logout" onclick="sessionStorage.removeItem('pin_tab_session');" class="btn btn-secondary btn-sm" title="Lock Platform" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.2);">
+    <a href="/auth/logout" onclick="sessionStorage.removeItem('pin_tab_session');" class="btn btn-secondary btn-sm header-lock-btn" title="Lock Platform" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.2);">
       <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
       </svg>
-      <span>Lock</span>
+      <span class="header-btn-label">Lock</span>
     </a>
   </div>
 </header>
