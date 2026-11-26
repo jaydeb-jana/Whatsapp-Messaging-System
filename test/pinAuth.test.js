@@ -68,6 +68,16 @@ async function testPinAuth() {
   assert.strictEqual(unauthJson.locked, true);
   console.log('  ✅ API properly locked with 401 Unauthorized');
 
+  // Test 3b: API request with x-api-pin header should be accepted (200 OK)
+  console.log('[TEST 3b] Verifying x-api-pin header authentication...');
+  const headerAuthApi = await request('/api/stats', {
+    headers: { 'x-api-pin': '123456' }
+  });
+  assert.strictEqual(headerAuthApi.status, 200);
+  const headerAuthJson = JSON.parse(headerAuthApi.body);
+  assert.strictEqual(headerAuthJson.success, true);
+  console.log('  ✅ API accessible (200 OK) with x-api-pin header');
+
   // Test 4: Visit /auth/pin returns 200 OK
   console.log('\n[TEST 4] Verifying PIN entry page rendering...');
   const pinPageRes = await request('/auth/pin');

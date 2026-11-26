@@ -275,7 +275,7 @@
     <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; line-height: 1.6;">
       <div><strong>Base API Endpoint:</strong> <code>http://localhost:4000/api</code></div>
       <div><strong>Content Types:</strong> <code>application/json</code> (for text) or <code>multipart/form-data</code> (for media/documents)</div>
-      <div><strong>Security:</strong> Accessible on localhost, or authenticated via session cookie / security PIN</div>
+      <div><strong>API Authentication:</strong> Pass header <code>x-api-pin: 123456</code>, or body field <code>pin: "123456"</code>, or authenticate via browser session.</div>
     </div>
 
     <!-- ENDPOINT 1: Send Text Message -->
@@ -294,6 +294,7 @@
         </div>
         <pre><code id="code-curl-text">curl -X POST http://localhost:4000/api/messages/send \
   -H "Content-Type: application/json" \
+  -H "x-api-pin: 123456" \
   -d '{
     "recipient": "+8801712345678",
     "messageType": "text",
@@ -310,6 +311,9 @@
         </div>
         <pre><code id="code-py-text">import requests
 
+headers = {
+    "x-api-pin": "123456"
+}
 payload = {
     "recipient": "+8801712345678",
     "messageType": "text",
@@ -317,7 +321,7 @@ payload = {
     "senderAccount": "account_1"
 }
 
-response = requests.post("http://localhost:4000/api/messages/send", json=payload)
+response = requests.post("http://localhost:4000/api/messages/send", headers=headers, json=payload)
 print(response.json())</code></pre>
       </div>
     </div>
@@ -336,6 +340,7 @@ print(response.json())</code></pre>
           <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-curl-image', this)">Copy cURL</button>
         </div>
         <pre><code id="code-curl-image">curl -X POST http://localhost:4000/api/messages/send \
+  -H "x-api-pin: 123456" \
   -F "recipient=+8801712345678" \
   -F "messageType=image" \
   -F "content=Check out our newest catalog design! 🌟" \
@@ -358,6 +363,7 @@ print(response.json())</code></pre>
           <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-curl-doc', this)">Copy cURL</button>
         </div>
         <pre><code id="code-curl-doc">curl -X POST http://localhost:4000/api/messages/send \
+  -H "x-api-pin: 123456" \
   -F "recipient=+8801712345678" \
   -F "messageType=document" \
   -F "customFileName=Invoice_November_2026.pdf" \

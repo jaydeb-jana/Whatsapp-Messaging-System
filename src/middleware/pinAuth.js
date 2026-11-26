@@ -18,9 +18,16 @@ function pinAuthMiddleware(req, res, next) {
     return next();
   }
 
-  // Check if session or signed cookie has verified status
+  // Check API PIN header or param for programmatic API calls
+  const authHeader = req.headers.authorization || '';
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+  const headerPin = req.headers['x-api-pin'] || req.headers['x-pin'] || bearerToken || req.query?.pin || req.body?.pin;
+  const isApiPinValid = headerPin ? verifyPin(headerPin) : false;
+
+  // Check if session, signed cookie, or API PIN has verified status
   const isVerified = (req.session && req.session.isPinVerified) ||
-                     (req.signedCookies && req.signedCookies.app_pin_verified === 'true');
+                     (req.signedCookies && req.signedCookies.app_pin_verified === 'true') ||
+                     isApiPinValid;
 
   if (isVerified) {
     res.locals.isPinVerified = true;
