@@ -34,6 +34,15 @@ function pinAuthMiddleware(req, res, next) {
     return next();
   }
 
+  // Defer PIN check for multipart /api/messages/send so multer can parse form fields first
+  const isMultipartSend = req.method === 'POST' &&
+    req.path === '/api/messages/send' &&
+    (req.headers['content-type'] || '').includes('multipart/form-data');
+
+  if (isMultipartSend) {
+    return next();
+  }
+
   // Not verified
   if (req.path.startsWith('/api/')) {
     return res.status(401).json({

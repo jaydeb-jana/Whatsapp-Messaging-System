@@ -72,10 +72,6 @@ app.use((req, res, next) => {
 // Authentication / PIN Routes (Publicly accessible)
 app.use('/auth', authRoutes);
 
-// Parse multipart upload fields for message send API before PIN auth so req.body.pin is available
-const upload = require('./middleware/uploadMiddleware');
-app.use('/api/messages/send', upload.any());
-
 // PIN Protection Barrier: Protects all subsequent dashboard, messaging & API routes
 app.use(pinAuthMiddleware);
 
