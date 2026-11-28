@@ -21,11 +21,7 @@
       --info: #3b82f6;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -40,7 +36,7 @@
     }
 
     .container {
-      max-width: 640px;
+      max-width: 660px;
       width: 100%;
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -48,7 +44,6 @@
       padding: 2.25rem;
       backdrop-filter: blur(16px);
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      position: relative;
     }
 
     .header {
@@ -68,8 +63,7 @@
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      letter-spacing: -0.02em;
+      gap: 0.5rem;
     }
 
     .status-badge {
@@ -82,7 +76,6 @@
       gap: 0.45rem;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
-      transition: all 0.3s;
     }
 
     .status-badge.online {
@@ -104,9 +97,7 @@
       background: currentColor;
     }
 
-    .status-dot.pulse {
-      animation: pulse-dot 1.8s infinite;
-    }
+    .status-dot.pulse { animation: pulse-dot 1.8s infinite; }
 
     @keyframes pulse-dot {
       0% { opacity: 1; transform: scale(1); }
@@ -130,13 +121,9 @@
       color: #fff;
       font-weight: 700;
       text-decoration: underline;
-      display: inline-block;
-      margin-top: 0.25rem;
     }
 
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
+    .form-group { margin-bottom: 1.25rem; }
 
     label {
       display: block;
@@ -153,10 +140,7 @@
       margin-left: 0.35rem;
     }
 
-    input[type="text"],
-    input[type="tel"],
-    select,
-    textarea {
+    input[type="text"], input[type="tel"], select, textarea {
       width: 100%;
       padding: 0.75rem 1rem;
       background: rgba(3, 7, 18, 0.65);
@@ -164,7 +148,6 @@
       border-radius: 10px;
       color: #fff;
       font-size: 0.9rem;
-      font-family: inherit;
       outline: none;
       transition: all 0.2s;
     }
@@ -176,8 +159,8 @@
 
     .type-switcher {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.4rem;
       margin-bottom: 1.25rem;
     }
 
@@ -185,9 +168,9 @@
       background: rgba(3, 7, 18, 0.65);
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 0.65rem 0.25rem;
+      padding: 0.65rem 0.2rem;
       border-radius: 10px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       text-align: center;
@@ -213,31 +196,11 @@
       text-align: center;
       background: rgba(3, 7, 18, 0.4);
       cursor: pointer;
-      position: relative;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s;
     }
 
     .file-dropzone:hover {
       border-color: var(--primary);
-      background: rgba(16, 185, 129, 0.05);
-    }
-
-    .file-dropzone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
-
-    .file-text {
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.35rem;
     }
 
     .grid-2 {
@@ -257,26 +220,11 @@
       font-weight: 800;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
       margin-top: 1rem;
     }
 
-    .btn-submit:hover {
-      background: var(--primary-hover);
-      color: #fff;
-    }
-
-    .btn-submit:active {
-      transform: scale(0.99);
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn-submit:hover { background: var(--primary-hover); color: #fff; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .response-card {
       margin-top: 1.5rem;
@@ -290,7 +238,6 @@
     .response-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       margin-bottom: 0.5rem;
       font-size: 0.78rem;
       font-weight: 700;
@@ -305,10 +252,9 @@
       overflow-y: auto;
       white-space: pre-wrap;
       word-break: break-all;
-      line-height: 1.4;
     }
 
-    /* Custom Toast Notification System (NO BROWSER ALERTS) */
+    /* Custom Toast Notification System */
     .toast-container {
       position: fixed;
       top: 1.5rem;
@@ -318,11 +264,9 @@
       flex-direction: column;
       gap: 0.75rem;
       max-width: 380px;
-      pointer-events: none;
     }
 
     .toast {
-      pointer-events: auto;
       background: rgba(15, 23, 42, 0.95);
       border: 1px solid var(--border);
       color: #fff;
@@ -330,31 +274,41 @@
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       font-size: 0.85rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.65rem;
-      animation: slide-in 0.25s ease-out;
       backdrop-filter: blur(12px);
     }
 
     .toast.success { border-color: rgba(16, 185, 129, 0.5); }
     .toast.error { border-color: rgba(239, 68, 68, 0.5); }
     .toast.warn { border-color: rgba(245, 158, 11, 0.5); }
-    .toast.info { border-color: rgba(59, 130, 246, 0.5); }
 
-    .toast-icon {
-      font-size: 1.1rem;
-      line-height: 1;
+    .code-accordion {
+      margin-top: 1.5rem;
+      background: rgba(3, 7, 18, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
     }
 
-    .toast-content {
-      flex: 1;
-      line-height: 1.4;
+    .code-accordion-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
     }
 
-    @keyframes slide-in {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    .code-snippet {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      background: #030712;
+      padding: 0.75rem;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      overflow-x: auto;
     }
 
     @media (max-width: 600px) {
@@ -366,14 +320,11 @@
 </head>
 <body>
 
-  <!-- Toast Container -->
   <div id="toast-container" class="toast-container"></div>
 
   <div class="container">
     <div class="header">
-      <div class="title">
-        <span>⚡ WhatsFlow Pro Dispatcher</span>
-      </div>
+      <div class="title">⚡ WhatsFlow Pro Dispatcher</div>
       <div id="conn-status" class="status-badge">
         <span class="status-dot pulse"></span>
         <span id="conn-text">Checking WhatsApp...</span>
@@ -383,7 +334,7 @@
     <!-- Alert Banner when no account is connected -->
     <div id="offline-alert" class="alert-banner">
       ⚠️ <strong>No WhatsApp account connected!</strong><br>
-      The API requires at least 1 active WhatsApp session to deliver messages.<br>
+      The API requires at least 1 active WhatsApp session to send messages.<br>
       👉 <a id="connect-link" href="http://localhost:4000/whatsapp/connect" target="_blank">Click here to Connect WhatsApp via QR or Pairing Code</a>
     </div>
 
@@ -399,13 +350,14 @@
       </div>
     </div>
 
-    <!-- Message Type Switcher -->
-    <label>Select Message Type:</label>
+    <!-- Mode Selector Tabs -->
+    <label>Message / Media Mode:</label>
     <div class="type-switcher">
-      <button type="button" class="type-btn active" data-type="text" onclick="setType('text')">💬 Text</button>
-      <button type="button" class="type-btn" data-type="document" onclick="setType('document')">📄 Document</button>
+      <button type="button" class="type-btn active" data-type="auto" onclick="setType('auto')">⚡ Any File</button>
+      <button type="button" class="type-btn" data-type="text" onclick="setType('text')">💬 Text Only</button>
       <button type="button" class="type-btn" data-type="image" onclick="setType('image')">🖼️ Image</button>
       <button type="button" class="type-btn" data-type="video" onclick="setType('video')">🎥 Video</button>
+      <button type="button" class="type-btn" data-type="audio" onclick="setType('audio')">🎵 Audio</button>
     </div>
 
     <!-- Recipient & Sender Slot -->
@@ -426,14 +378,14 @@
       </div>
     </div>
 
-    <!-- File Attachment (Hidden for text) -->
-    <div class="form-group" id="file-group" style="display: none;">
-      <label id="file-label">Attach File:</label>
+    <!-- File Attachment (Works for ANY file) -->
+    <div class="form-group" id="file-group">
+      <label id="file-label">Attach File:<span class="label-hint">(Optional if text is provided)</span></label>
       <div class="file-dropzone" onclick="document.getElementById('mediaFile').click()">
-        <input type="file" id="mediaFile" onchange="handleFileChange(this)">
-        <div class="file-text" id="file-text">
-          <span>📁 Click or drag &amp; drop your file here</span>
-          <span style="font-size: 0.72rem; color: var(--text-muted);">(PDF, Word, Excel, Images, or MP4)</span>
+        <input type="file" id="mediaFile" style="display:none;" onchange="handleFileChange(this)">
+        <div id="file-text" style="font-size: 0.85rem; color: #cbd5e1;">
+          📁 Click or drag &amp; drop ANY file here<br>
+          <span style="font-size: 0.74rem; color: var(--text-muted);">(PDF, Word, Excel, Images, Audio MP3, Video MP4, ZIP)</span>
         </div>
       </div>
     </div>
@@ -446,13 +398,13 @@
 
     <!-- Message Content / Media Caption -->
     <div class="form-group">
-      <label for="content">Message Text / Caption:<span class="label-hint">(Supports Bengali, Unicode &amp; Emojis)</span></label>
-      <textarea id="content" rows="3" placeholder="Type your WhatsApp message here...">আসসালামু আলাইকুম! এটি WhatsFlow Pro API টেস্ট মেসেজ। 🚀</textarea>
+      <label for="content" id="content-label">Message Text / Caption:<span class="label-hint">(Optional if file is attached)</span></label>
+      <textarea id="content" rows="3" placeholder="Type message here... (Bengali Unicode &amp; Emojis supported)">আসসালামু আলাইকুম! এটি WhatsFlow Pro API টেস্ট মেসেজ। 🚀</textarea>
     </div>
 
     <!-- Submit Button -->
     <button type="button" class="btn-submit" id="btn-send" onclick="sendNow()">
-      <span>🚀 Send WhatsApp Message</span>
+      🚀 Send WhatsApp Message
     </button>
 
     <!-- Response Box -->
@@ -463,46 +415,56 @@
       </div>
       <pre id="response-box" class="response-box"></pre>
     </div>
+
+    <!-- Quick JS Browser Snippet -->
+    <div class="code-accordion">
+      <div class="code-accordion-title" onclick="toggleCodeBox()">
+        <span>📋 Browser JavaScript Snippet (Click to view/copy)</span>
+        <span id="code-arrow">▼</span>
+      </div>
+      <div id="code-box" style="display: none;">
+        <pre class="code-snippet"><code>// Send Text or ANY File from Browser:
+const formData = new FormData();
+formData.append('recipient', '+8801712345678');
+formData.append('message', 'Hello from Browser!'); // Optional if file attached
+// formData.append('file', myFileInput.files[0]);   // Optional if message provided
+formData.append('pin', '123456');
+
+fetch('http://localhost:4000/api/messages/send', {
+  method: 'POST',
+  body: formData
+})
+.then(res => res.json())
+.then(data => console.log('Response:', data));</code></pre>
+      </div>
+    </div>
   </div>
 
   <script>
-    let activeType = "text";
+    let activeType = "auto";
 
-    // Dynamic Host Detection: Use current window location if loaded from server
     if (window.location.protocol.startsWith("http")) {
       document.getElementById("apiUrl").value = window.location.origin;
       document.getElementById("connect-link").href = `${window.location.origin}/whatsapp/connect`;
     }
 
-    // Custom Toast Notification (Strictly avoids window.alert)
+    function toggleCodeBox() {
+      const box = document.getElementById("code-box");
+      const arrow = document.getElementById("code-arrow");
+      const isHidden = box.style.display === "none";
+      box.style.display = isHidden ? "block" : "none";
+      arrow.textContent = isHidden ? "▲" : "▼";
+    }
+
     function notify(message, type = 'info') {
       const container = document.getElementById("toast-container");
       const toast = document.createElement("div");
       toast.className = `toast ${type}`;
-
-      const icons = {
-        success: '✅',
-        error: '❌',
-        warn: '⚠️',
-        info: 'ℹ️'
-      };
-
-      toast.innerHTML = `
-        <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
-        <div class="toast-content">${message}</div>
-      `;
-
+      toast.textContent = message;
       container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.style.transition = 'opacity 0.4s, transform 0.4s';
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(-10px)';
-        setTimeout(() => toast.remove(), 400);
-      }, 4500);
+      setTimeout(() => { toast.remove(); }, 4000);
     }
 
-    // 1. Check WhatsApp connection status
     async function checkStatus() {
       const apiUrl = document.getElementById("apiUrl").value.trim().replace(/\/$/, "");
       const pin = document.getElementById("pin").value.trim() || "123456";
@@ -515,31 +477,24 @@
           headers: { "x-api-pin": pin }
         });
         const data = await res.json();
-
         if (data.connectedCount > 0) {
           statusBadge.className = "status-badge online";
-          statusText.textContent = `${data.connectedCount} of 5 Accounts Online`;
+          statusText.textContent = `● ${data.connectedCount} of 5 Online`;
           offlineAlert.style.display = "none";
         } else {
           statusBadge.className = "status-badge offline";
-          statusText.textContent = "WhatsApp Offline (0/5)";
+          statusText.textContent = "○ WhatsApp Offline (0/5)";
           offlineAlert.style.display = "block";
         }
       } catch (err) {
         statusBadge.className = "status-badge offline";
-        statusText.textContent = "Server Offline";
+        statusText.textContent = "○ Server Offline";
         offlineAlert.style.display = "block";
       }
     }
 
-    // Run connection status check on load
     checkStatus();
 
-    // Re-check status when API URL or PIN changes
-    document.getElementById("apiUrl").addEventListener("change", checkStatus);
-    document.getElementById("pin").addEventListener("change", checkStatus);
-
-    // 2. Switch message type
     function setType(type) {
       activeType = type;
       document.querySelectorAll(".type-btn").forEach(b => {
@@ -555,11 +510,12 @@
         filenameGroup.style.display = "none";
       } else {
         fileGroup.style.display = "block";
-        filenameGroup.style.display = (type === "document") ? "block" : "none";
+        filenameGroup.style.display = (type === "auto" || type === "document") ? "block" : "none";
 
         if (type === "image") fileInput.accept = "image/*";
         else if (type === "video") fileInput.accept = "video/*";
-        else fileInput.accept = ".pdf,.docx,.xlsx,.pptx,.zip,.rar,.txt,.csv";
+        else if (type === "audio") fileInput.accept = "audio/*";
+        else fileInput.accept = "*/*";
       }
     }
 
@@ -567,16 +523,13 @@
       const fileText = document.getElementById("file-text");
       if (input.files && input.files[0]) {
         const file = input.files[0];
-        fileText.innerHTML = `<span>📄 <strong>${file.name}</strong></span><span style="font-size:0.75rem; color: #10b981;">${Math.round(file.size / 1024)} KB ready to send</span>`;
+        fileText.innerHTML = `📄 <strong>${file.name}</strong> (${Math.round(file.size / 1024)} KB)<br><span style="color:#10b981;font-size:0.75rem;">Ready to dispatch</span>`;
         if (!document.getElementById("customFileName").value) {
           document.getElementById("customFileName").value = file.name;
         }
-      } else {
-        fileText.innerHTML = `<span>📁 Click or drag &amp; drop your file here</span><span style="font-size: 0.72rem; color: var(--text-muted);">(PDF, Word, Excel, Images, or MP4)</span>`;
       }
     }
 
-    // 3. Send WhatsApp Message
     async function sendNow() {
       const apiUrl = document.getElementById("apiUrl").value.trim().replace(/\/$/, "");
       const recipient = document.getElementById("recipient").value.trim();
@@ -584,8 +537,7 @@
       const senderAccount = document.getElementById("senderAccount").value;
       const pin = document.getElementById("pin").value.trim() || "123456";
       const customFileName = document.getElementById("customFileName").value.trim();
-      const fileInput = document.getElementById("mediaFile");
-      const file = fileInput.files ? fileInput.files[0] : null;
+      const file = document.getElementById("mediaFile").files[0];
 
       const btn = document.getElementById("btn-send");
       const respCard = document.getElementById("response-card");
@@ -593,44 +545,38 @@
       const respStatus = document.getElementById("response-status");
 
       if (!recipient) {
-        notify("Please enter the recipient phone number with country code.", "warn");
-        document.getElementById("recipient").focus();
+        notify("Please enter the recipient phone number.", "warn");
         return;
       }
 
-      if (activeType !== "text" && !file) {
-        notify(`Please select a file to upload for ${activeType} message.`, "warn");
+      if (!content && !file) {
+        notify("Please enter message text OR attach a file to send.", "warn");
         return;
       }
 
       btn.disabled = true;
-      btn.innerHTML = "<span>⏳ Dispatching via WhatsApp API...</span>";
+      btn.textContent = "⏳ Sending via WhatsApp...";
       respCard.style.display = "block";
-      respStatus.textContent = "SENDING...";
-      respBox.style.color = "#94a3b8";
-      respBox.textContent = "Connecting to server and transmitting payload...";
+      respStatus.textContent = "DISPATCHING...";
+      respBox.textContent = "Sending payload to server...";
 
       const formData = new FormData();
       formData.append("recipient", recipient);
-      formData.append("messageType", activeType);
-      formData.append("content", content);
+      formData.append("message", content);
       formData.append("senderAccount", senderAccount);
       formData.append("pin", pin);
 
-      if (customFileName) {
-        formData.append("customFileName", customFileName);
+      if (activeType !== "auto") {
+        formData.append("messageType", activeType);
       }
 
-      if (file) {
-        formData.append("media", file);
-      }
+      if (customFileName) formData.append("customFileName", customFileName);
+      if (file) formData.append("file", file);
 
       try {
         const response = await fetch(`${apiUrl}/api/messages/send`, {
           method: "POST",
-          headers: {
-            "x-api-pin": pin
-          },
+          headers: { "x-api-pin": pin },
           body: formData
         });
 
@@ -640,19 +586,18 @@
 
         if (data.success) {
           respBox.style.color = "#a7f3d0";
-          notify("🎉 Message dispatched successfully to WhatsApp!", "success");
+          notify("🎉 Message sent successfully!", "success");
         } else {
           respBox.style.color = "#fca5a5";
-          notify("❌ " + (data.error || "Failed to send message"), "error");
+          notify("❌ " + (data.error || "Failed to send"), "error");
         }
       } catch (err) {
-        respStatus.textContent = "NETWORK ERROR";
         respBox.style.color = "#fca5a5";
-        respBox.textContent = "Network Error: " + err.message + "\n\nMake sure the server is running at " + apiUrl;
-        notify("❌ Network error: Could not reach API server.", "error");
+        respBox.textContent = "Error: " + err.message;
+        notify("❌ Connection error: " + err.message, "error");
       } finally {
         btn.disabled = false;
-        btn.innerHTML = "<span>🚀 Send WhatsApp Message</span>";
+        btn.textContent = "🚀 Send WhatsApp Message";
         checkStatus();
       }
     }

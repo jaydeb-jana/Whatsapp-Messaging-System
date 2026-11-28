@@ -89,6 +89,26 @@ async function testMessagingValidation() {
   assert.strictEqual(dupCheck.duplicate, true);
   console.log('  ✅ Duplicate submission blocked by idempotency key');
 
+  // Test 6: Audio message type persistence
+  console.log('\n[TEST 6] Verifying Audio message type support...');
+  const audioMsgId = `audio_test_${Date.now()}`;
+  await Message.create({
+    messageId: audioMsgId,
+    recipient: '+12025550199',
+    recipientJid: '12025550199@s.whatsapp.net',
+    messageType: 'audio',
+    content: '',
+    fileName: 'voice_note.mp3',
+    fileSize: 524288,
+    mimeType: 'audio/mpeg',
+    status: 'sent',
+    sentAt: new Date()
+  });
+  const audioRecord = await Message.findOne({ messageId: audioMsgId });
+  assert.strictEqual(audioRecord.messageType, 'audio');
+  console.log('  ✅ Audio message type stored and retrieved successfully');
+  await Message.deleteOne({ messageId: audioMsgId });
+
   // Cleanup
   await Message.deleteMany({ messageId: { $in: [msgId, docMsgId] } });
   await disconnectDatabase();

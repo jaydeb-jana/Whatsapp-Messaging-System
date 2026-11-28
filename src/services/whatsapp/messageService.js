@@ -174,6 +174,19 @@ class MessageService {
           break;
         }
 
+        case 'audio': {
+          if (!file) {
+            throw new Error('Audio file is required for audio message type.');
+          }
+          const fileBuffer = fs.readFileSync(file.path);
+          baileysPayload = {
+            audio: fileBuffer,
+            mimetype: mimeType || 'audio/mp4',
+            ptt: false
+          };
+          break;
+        }
+
         default:
           throw new Error(`Unsupported message type: ${messageType}`);
       }

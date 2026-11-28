@@ -22,7 +22,7 @@ router.post('/whatsapp/accounts/add', whatsappController.addAccountApi);
 router.post('/whatsapp/accounts/remove', whatsappController.removeAccountApi);
 
 // Messaging APIs
-router.post('/messages/send', messagingLimiter, upload.single('media'), messageController.sendMessageApi);
+router.post('/messages/send', messagingLimiter, upload.any(), messageController.sendMessageApi);
 router.get('/messages/history', messageController.getHistoryApi);
 router.get('/messages/:id', messageController.getMessageById);
 

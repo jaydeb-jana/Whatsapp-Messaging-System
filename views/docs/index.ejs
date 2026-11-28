@@ -274,8 +274,49 @@
     <!-- API Base Information -->
     <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; line-height: 1.6;">
       <div><strong>Base API Endpoint:</strong> <code>http://localhost:4000/api</code></div>
-      <div><strong>Content Types:</strong> <code>application/json</code> (for text) or <code>multipart/form-data</code> (for media/documents)</div>
-      <div><strong>API Authentication:</strong> Pass header <code>x-api-pin: 123456</code>, or body field <code>pin: "123456"</code>, or authenticate via browser session.</div>
+      <div><strong>Unified Endpoint:</strong> <code>POST /api/messages/send</code> (Handles Text, Images, Videos, Audio, and Documents)</div>
+      <div><strong>Authentication:</strong> Pass header <code>x-api-pin: 123456</code>, URL query <code>?pin=123456</code>, or form field <code>pin: "123456"</code>.</div>
+    </div>
+
+    <!-- Easy Mode Highlights -->
+    <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(3, 7, 18, 0.9) 100%); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span class="badge badge-success" style="font-weight: 800;">⚡ SIMPLIFIED UNIVERSAL API</span>
+        <span style="color: #fff; font-weight: 700; font-size: 1rem;">Send Anything with 1 Simple Request</span>
+      </div>
+      <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 0.75rem;">
+        No complicated rules: <strong>Text is optional</strong> when you attach any file, and <strong>file is optional</strong> when you send text. You can upload <strong>Images, Videos, Audios, or Documents</strong>—the API automatically detects the file type!
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; font-size: 0.8rem; color: #94a3b8; margin-bottom: 1rem;">
+        <div>✅ <strong>Recipient:</strong> <code>recipient</code> or <code>phone</code></div>
+        <div>✅ <strong>Text / Caption:</strong> <code>message</code> or <code>content</code> (Optional with files)</div>
+        <div>✅ <strong>Attachment:</strong> <code>file</code> or <code>media</code> (Any format: MP3, MP4, PDF, PNG, etc.)</div>
+        <div>✅ <strong>PIN Auth:</strong> Header <code>x-api-pin</code>, query <code>?pin=</code>, or form field <code>pin</code></div>
+      </div>
+
+      <!-- Browser JavaScript Example -->
+      <div class="code-box-container">
+        <div class="code-box-header">
+          <span>Browser JavaScript (Fetch &amp; FormData) — Send Text or ANY File</span>
+          <button type="button" class="btn-copy-code" onclick="copyCodeSnippet('code-js-browser', this)">Copy Browser JS</button>
+        </div>
+        <pre><code id="code-js-browser">// 1. Build simple form payload
+const formData = new FormData();
+formData.append('recipient', '+8801712345678');
+formData.append('message', 'Hello World from Browser! 🚀'); // Optional if file attached
+formData.append('pin', '123456');
+
+// To attach ANY file (Video, Audio, Image, PDF, etc.):
+// formData.append('file', document.getElementById('myFileInput').files[0]);
+
+// 2. Dispatch request directly from browser
+const res = await fetch('http://localhost:4000/api/messages/send', {
+  method: 'POST',
+  body: formData
+});
+const data = await res.json();
+console.log('Result:', data);</code></pre>
+      </div>
     </div>
 
     <!-- ENDPOINT 1: Send Text Message -->

@@ -7,35 +7,9 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Allowed MIME types map
-const ALLOWED_MIME_TYPES = new Set([
-  // Images
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/gif',
-  // Videos
-  'video/mp4',
-  'video/3gpp',
-  'video/quicktime',
-  'video/x-matroska',
-  // Documents
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/zip',
-  'application/x-zip-compressed',
-  'application/octet-stream',
-  'text/plain',
-  'text/csv'
-]);
-
-const ALLOWED_EXTENSIONS = new Set([
-  '.jpg', '.jpeg', '.png', '.webp', '.gif',
-  '.mp4', '.3gp', '.mov', '.mkv',
-  '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip', '.txt', '.csv'
+// Blocked dangerous executable extensions for security
+const BLOCKED_EXTENSIONS = new Set([
+  '.exe', '.bat', '.cmd', '.sh', '.vbs', '.msi', '.ps1', '.com', '.scr', '.pif', '.hta', '.cpl', '.jar'
 ]);
 
 const storage = multer.diskStorage({
@@ -53,16 +27,16 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  const mime = file.mimetype.toLowerCase();
 
-  if (ALLOWED_EXTENSIONS.has(ext) || ALLOWED_MIME_TYPES.has(mime)) {
-    cb(null, true);
+  // Allow ANY file format except dangerous executables
+  if (BLOCKED_EXTENSIONS.has(ext)) {
+    cb(new Error(`Executable files (${ext}) cannot be uploaded for security reasons.`), false);
   } else {
-    cb(new Error(`File type not allowed (${ext} / ${mime}). Supported formats: Images, Videos (MP4/3GP/MOV/MKV), Documents (PDF/DOCX/XLSX/ZIP/TXT)`), false);
+    cb(null, true);
   }
 };
 
-const maxFileSizeMB = parseInt(process.env.MAX_FILE_SIZE_MB || '50', 10);
+const maxFileSizeMB = parseInt(process.env.MAX_FILE_SIZE_MB || '100', 10);
 
 const upload = multer({
   storage,
